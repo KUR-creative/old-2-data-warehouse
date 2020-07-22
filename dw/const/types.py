@@ -1,6 +1,6 @@
-from typing import NamedTuple, Mapping, Any
+from typing import NamedTuple, Mapping, Any, Optional
 from enum import Enum, auto
-import uuid
+from uuid import UUID, uuid4
 
 from parse import parse
 
@@ -26,11 +26,14 @@ class DataType(_AutoName):
     image = auto()
     m109xml = auto()
     
+    file = auto()
     crop = auto()
     mask = auto()
     
+    NONE = auto()
+    
 class Data(NamedTuple):
-    uuid: uuid.UUID
-    type: DataType
-    value: Any
-    #value: Mapping[str, Any] 
+    uuid: UUID = uuid4()
+    type: DataType = DataType.NONE
+    #value: Any = None
+    value: Mapping[str, Any] = {}

@@ -14,7 +14,7 @@ from dw.api import put
 @st.composite
 def rand_datum(draw):
     return types.Data(
-        uuid4(), draw(st.sampled_from(types.DataType)), None
+        uuid4(), draw(st.sampled_from(types.DataType))
     )
 @given(datums=st.lists(rand_datum()))
 @settings(max_examples=20)
