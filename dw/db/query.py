@@ -1,3 +1,5 @@
+from sqlalchemy.orm.session import close_all_sessions #type: ignore
+
 from dw.db.schema import Base
 from dw.db import orm
 
@@ -10,6 +12,5 @@ def CREATE_TABLES():
 # ** DANGER! **
 def DROP_ALL():
     assert orm.engine is not None, 'orm.init first.'
-    assert orm.sess_factory is not None, 'orm.init first.'
-    orm.sess_factory.close_all() # need to close all
+    close_all_sessions() # need to close all
     Base.metadata.drop_all(orm.engine)

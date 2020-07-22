@@ -8,7 +8,7 @@ from dw.db import query as Q
 def test_tmp(conn):
     if conn is None: pytest.skip()
     orm.engine = None
-    orm.sess_factory = None
+    orm._make_sess = None
     with pytest.raises(AssertionError):
         Q.CREATE_TABLES()
     with pytest.raises(AssertionError):
