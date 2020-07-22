@@ -42,4 +42,3 @@ def test_select_with_string_path(at_path):
     assert path == str(Path(
         *parts[:i], select_at(path), *parts[i+1:]
     )), 'str path, curried select case'
-

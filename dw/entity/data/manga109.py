@@ -14,16 +14,19 @@ from dw.const.types import Data, DataType
 from dw.util import file_utils as fu
 
 
+#---------------------------------------------------------------
+def imgdir(root): return Path(root, 'images')
+def xmldir(root): return Path(root, 'manga109-annotations')
+
+#---------------------------------------------------------------
 def valid(root):
     return True
 
 # root -> [load] -> [process] -> [canonical]
 # -> canonical form of data
 def load(root):
-    img_dir = Path(root, 'images')
-    xml_dir = Path(root, 'manga109-annotations')
-    imgpaths = fu.descendants(img_dir)
-    xmlpaths = fu.descendants(xml_dir)
+    imgpaths = fu.descendants(imgdir(root))
+    xmlpaths = fu.descendants(xmldir(root))
     return imgpaths, xmlpaths
 
 def process(loaded):
@@ -49,4 +52,3 @@ def canonical(processed) -> Optional[List[Data]]:
                   data_rel=(img_id, xml_id, 'manga109_xml')))
         for img_id, xml_id, p in zip(img_ids, xml_ids, xmlpaths)
     ]
-        

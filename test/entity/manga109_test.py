@@ -8,10 +8,8 @@ from dw.util import file_utils as fu
 
 def test_make_canonical_form_data_from_manga109(m109):
     cfs = make.data(manga109)(m109)
-    img_dir = Path(m109, 'images')
-    xml_dir = Path(m109, 'manga109-annotations')
-    num_imgs = len(fu.descendants(img_dir))
-    num_xmls = len(fu.descendants(xml_dir))
+    num_imgs = len(fu.descendants(manga109.imgdir(m109)))
+    num_xmls = len(fu.descendants(manga109.xmldir(m109)))
     
     assert len(cfs) == num_imgs + num_xmls
     # assert about data type
