@@ -33,7 +33,8 @@ class DataType(_AutoName):
     NONE = auto()
     
 class Data(NamedTuple):
-    uuid: UUID = uuid4()
+    uuid: UUID = None #type: ignore 
+    # if uuid = None, then S.data(uuid = auto generated)
     type: DataType = DataType.NONE
     #value: Any = None
     value: Mapping[str, Any] = {}
