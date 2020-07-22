@@ -32,3 +32,5 @@ class DataType(_AutoName):
 class Data(NamedTuple):
     uuid: uuid.UUID
     type: DataType
+    value: Any
+    #value: Mapping[str, Any] 

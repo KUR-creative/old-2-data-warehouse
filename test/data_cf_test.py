@@ -11,8 +11,12 @@ from dw.db import query as Q
 from dw.const import types
 from dw.api import put
 
-
-@given(datums=st.lists(st.builds(types.Data)))
+@st.composite
+def rand_datum(draw):
+    return types.Data(
+        uuid4(), draw(st.sampled_from(types.DataType)), None
+    )
+@given(datums=st.lists(rand_datum()))
 @settings(max_examples=20)
 def test_insert(datums, conn):
     if conn is None: pytest.skip()

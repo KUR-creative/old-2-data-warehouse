@@ -1,5 +1,6 @@
 from enum import Enum
 from uuid import uuid4
+from pprint import pformat
 
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
@@ -34,5 +35,7 @@ class Data(Base):
     def __init__(self, nt_obj):
         super(Data, self).__init__(**nt_dic(nt_obj)) # type: ignore
     def __repr__(self):
-        return "<Data(uuid='%s', type='%s')>" % (
-            self.uuid, self.type)
+        return "<Data(uuid=%s, type=%s): value=%s>" % (
+            self.uuid, self.type, pformat(self.value))
+    
+    value = None # not column, just conformance to types.Data
