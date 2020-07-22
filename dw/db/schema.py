@@ -26,16 +26,18 @@ dataset은 named_dat_rel 3개로 이루어진다.
 
 Base = declarative_base()
 
-class Data(Base):
+class data(Base):
     __tablename__ = 'data'
     uuid = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid4)
     type = Column(String)
 
     def __init__(self, nt_obj):
-        super(Data, self).__init__(**nt_dic(nt_obj)) # type: ignore
+        super(data, self).__init__(**nt_dic(nt_obj)) # type: ignore
     def __repr__(self):
-        return "<Data(uuid=%s, type=%s): value=%s>" % (
+        return "<data(uuid=%s, type=%s): value=%s>" % (
             self.uuid, self.type, pformat(self.value))
     
-    value = None # not column, just conformance to types.Data
+    value = None # not column, just conformance to types.data
+
+#class 

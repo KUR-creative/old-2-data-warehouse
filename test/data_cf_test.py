@@ -23,8 +23,8 @@ def test_insert(datums, conn):
     orm.init(types.connection(conn))
     Q.CREATE_TABLES()
     with orm.session() as sess:
-        sess.add_all(F.lmap(S.Data, datums))
+        sess.add_all(F.lmap(S.data, datums))
         # Be Careful!! sess must be in ctx manager!!!
-        for inp, out in zip(datums, sess.query(S.Data).all()):
+        for inp, out in zip(datums, sess.query(S.data).all()):
             assert inp.uuid == out.uuid
     Q.DROP_ALL()
