@@ -4,3 +4,4 @@ def data(entity):
         loaded = entity.load(checked)
         processed = entity.process(checked)
         return entity.canonical(processed)
+    return fn
