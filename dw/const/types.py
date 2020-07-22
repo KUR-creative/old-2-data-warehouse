@@ -23,7 +23,9 @@ class _AutoName(Enum):
     def _generate_next_value_(name, start, count, last_values):
         return name
 class DataType(_AutoName):
-    img = auto()
+    image = auto()
+    m109xml = auto()
+    
     crop = auto()
     mask = auto()
     
