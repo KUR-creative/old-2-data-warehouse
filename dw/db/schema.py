@@ -3,12 +3,14 @@ from uuid import uuid4
 from pprint import pformat
 
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.dialects import postgresql as pg
 
 from dw.const import types
 
 #---------------------------------------------------------------
+# NOTE: If it is useless to general case, remove it!
 def nt_dic(nt_obj):
     ''' namedtuple obj to db dic ''' 
     dic = nt_obj._asdict()
@@ -28,8 +30,7 @@ Base = declarative_base()
 
 class data(Base):
     __tablename__ = 'data'
-    uuid = Column(
-        UUID(as_uuid=True), primary_key=True, default=uuid4)
+    uuid = Column(pg.UUID(as_uuid=True), primary_key=True, default=uuid4)
     type = Column(String)
 
     def __init__(self, nt_obj):
@@ -40,4 +41,15 @@ class data(Base):
     
     value = None # not column, just conformance to types.data
 
-#class 
+class file(Base):
+    __tablename__ = 'file'
+    uuid = Column(pg.UUID(as_uuid=True), ForeignKey('data.uuid'), primary_key=True)
+    path = Column(String, nullable=False)
+    type = Column(String) # extension
+    md5 = Column(pg.BYTEA)
+    def __repr__(self):
+        return "<file(uuid=%s, path=%s>" % (
+            self.uuid, self.path)
+    
+    #data = relationship('user', backref=backref('user'))
+    #type = Column(String)

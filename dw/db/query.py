@@ -14,3 +14,5 @@ def DROP_ALL():
     assert orm.engine is not None, 'orm.init first.'
     close_all_sessions() # need to close all
     Base.metadata.drop_all(orm.engine)
+
+#---------------------------------------------------------------
