@@ -40,14 +40,15 @@ def canonical(processed) -> Optional[List[Data]]:
     # Note: file type != extension case...
     return [
         Data(uuid,
-             DataType.file,
+             DataType.image,
              dict(source=dict(name='manga109'),
                   file=dict(path=p, type=extension(p))))
         for uuid, p in zip(img_ids, imgpaths)
     ] + [
         Data(xml_id,
              DataType.m109xml,
-             dict(file=dict(path=p, type=extension(p)),
+             dict(source=dict(name='manga109'),
+                  file=dict(path=p, type=extension(p)),
                   data_rel=dict(a=img_id,
                                 b=xml_id,
                                 type='img_m109xml')))

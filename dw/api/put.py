@@ -13,6 +13,7 @@ def data(cfs: Iterable[types.Data]):
 
     datumseq = (S.data(cf) for cf in cfs)
     values = [cf.value for cf in cfs]
+    
     with orm.session() as sess:
         sess.add_all(datumseq)
         sess.commit()

@@ -51,9 +51,15 @@ class data(Base):
 
 class file(Base):
     __tablename__ = 'file'
-    uuid = Column(pg.UUID(as_uuid=True), ForeignKey('data.uuid'), primary_key=True)
-    path = Column(String, nullable=False)
+    uuid = Column(pg.UUID(as_uuid=True), ForeignKey('data.uuid'))
+    path = Column(String, primary_key=True, nullable=False)
     type = Column(String) # extension
     md5 = Column(pg.BYTEA)
     #data = relationship('user', backref=backref('user'))
     #type = Column(String)
+    
+class source(Base):
+    __tablename__ = 'source'
+    uuid = Column(pg.UUID(as_uuid=True), ForeignKey('data.uuid'),
+                  primary_key=True)
+    name = Column(String, primary_key=True, nullable=False)
