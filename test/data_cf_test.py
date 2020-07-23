@@ -21,7 +21,7 @@ def rand_datum(draw):
 def test_insert(datums, conn):
     skipif_none(datums, conn)
     # insert generated canonical forms of data
-    orm.init(types.connection(conn))
+    orm.init(conn)
     Q.CREATE_TABLES()
     with orm.session() as sess:
         sess.add_all(F.lmap(S.data, datums))

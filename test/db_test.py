@@ -19,8 +19,10 @@ def test_init_with_conn_obj(conn):
     Q.CREATE_TABLES()
     Q.DROP_ALL()
     
-def test_init_with_conn_str(conn):
+def test_init_with_conn_str(conn: str):
     skipif_none(conn)
+    orm.engine = None
+    orm._make_sess = None
     
     orm.init(conn)
     Q.CREATE_TABLES()
