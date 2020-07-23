@@ -10,6 +10,7 @@ from dw.db import schema as S
 from dw.db import query as Q
 from dw.const import types
 from dw.api import put
+from dw.util.test_utils import skipif_none
 
 @st.composite
 def rand_datum(draw):
@@ -18,7 +19,7 @@ def rand_datum(draw):
 @given(datums=st.lists(rand_datum()))
 @settings(max_examples=20)
 def test_insert(datums, conn):
-    if conn is None: pytest.skip()
+    skipif_none(datums, conn)
     # insert generated canonical forms of data
     orm.init(types.connection(conn))
     Q.CREATE_TABLES()
