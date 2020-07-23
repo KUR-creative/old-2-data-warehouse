@@ -26,7 +26,19 @@ named_dat_rel 은 이름 붙여진 데이터 사이의 관계이다.
 dataset은 named_dat_rel 3개로 이루어진다.
 '''
 
-Base = declarative_base()
+# https://stackoverflow.com/a/54034230
+def keyvalgen(obj):
+    """ Generate attr name/val pairs, filtering out SQLA attrs."""
+    excl = ('_sa_adapter', '_sa_instance_state')
+    for k, v in vars(obj).items():
+        if not k.startswith('_') and not any(hasattr(v, a) for a in excl):
+            yield k, v
+class ReprHelper:
+    def __repr__(self):
+        params = ', '.join(f'{k}={v}' for k, v in keyvalgen(self))
+        return f"{self.__class__.__name__}<{params}>"
+    
+Base = declarative_base(cls=ReprHelper)
 
 class data(Base):
     __tablename__ = 'data'
@@ -35,10 +47,6 @@ class data(Base):
 
     def __init__(self, nt_obj):
         super(data, self).__init__(**nt_dic(nt_obj)) # type: ignore
-    def __repr__(self):
-        return "<data(uuid=%s, type=%s): value=%s>" % (
-            self.uuid, self.type, pformat(self.value))
-    
     value = None # not column, just conformance to types.data
 
 class file(Base):
@@ -47,9 +55,5 @@ class file(Base):
     path = Column(String, nullable=False)
     type = Column(String) # extension
     md5 = Column(pg.BYTEA)
-    def __repr__(self):
-        return "<file(uuid=%s, path=%s>" % (
-            self.uuid, self.path)
-    
     #data = relationship('user', backref=backref('user'))
     #type = Column(String)
