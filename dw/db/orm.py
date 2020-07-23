@@ -13,7 +13,7 @@ engine = None
 _make_sess = None
 
 def init(conn: Union[Connection, str], echo=True):
-    ''' Call only one time '''
+    ''' Call only one time, also be used by "init assertion" '''
     global engine, _make_sess
     
     if engine is None:

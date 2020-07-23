@@ -1,8 +1,9 @@
 from pathlib import Path
 
-from dw.db import orm
 from dw.api import make, put
 from dw.const import types
+from dw.db import orm
+from dw.db import query as Q
 from dw.entity.data import manga109
 from dw.util import file_utils as fu
 from dw.util.test_utils import skipif_none
@@ -21,5 +22,10 @@ def test_put_data_from_manga109(conn, m109):
     skipif_none(conn, m109)
     cfs = make.data(manga109)(m109)
 
-    #orm.init
+    orm.init(conn)
+    Q.DROP_ALL()
+    Q.CREATE_TABLES()
+    
     put.data(cfs)
+    
+    Q.DROP_ALL()

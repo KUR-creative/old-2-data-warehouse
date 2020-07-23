@@ -14,9 +14,19 @@ print(S.nt_dic(T.Data(1,2,3)))
 
 
 import os
-orm.init(T.connection(os.environ['conn']))
+conn = os.environ['conn']
+m109 = os.environ['m109']
+orm.init(T.connection(conn))
+Q.DROP_ALL()
 Q.CREATE_TABLES()
+from dw.api import make, put
+from dw.entity.data import manga109
 
+cfs = make.data(manga109)(m109)
+put.data(cfs)
+print(S.file(uuid=1,path=2,type=3))
+
+'''
 with orm.session() as sess:
     id = uuid4()
     data = S.data(T.Data(id))
@@ -41,3 +51,4 @@ pprint(list(result))
 pprint(list(result2))
     
 Q.DROP_ALL()
+'''
