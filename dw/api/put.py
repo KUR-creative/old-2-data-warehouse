@@ -1,10 +1,9 @@
 from typing import Iterable
 
-import funcy as F
-
 from dw.const import types
 from dw.db import orm
 from dw.db import schema as S
+from dw.util import fp
 
 
 def data(cfs: Iterable[types.Data]):
@@ -12,14 +11,13 @@ def data(cfs: Iterable[types.Data]):
     assert orm.engine is not None, 'orm.init first.'
 
     datumseq = (S.data(cf) for cf in cfs)
-    values = [cf.value for cf in cfs]
-    
+    valueseq = (cf.value for cf in cfs)
+    rowseq = fp.mapcat(value2row, valueseq)
     with orm.session() as sess:
-        sess.add_all(datumseq)
-        sess.commit()
+        sess.add_all(datumseq); sess.commit()
+        sess.add_all(rowseq)
 
-    from pprint import pprint
-    print(' v0')
-    pprint(values[0])
-    print(' v-1')
-    pprint(values[-1])
+def value2row(v):
+    ''' value dict -> schema object(row) '''
+    return [fp.prop(name, S)(**row) for name,row in v.items()]
+    # Is it ok? Is orm commit data_rel last?? Maybe..

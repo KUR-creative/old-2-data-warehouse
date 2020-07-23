@@ -17,7 +17,7 @@ def rand_datum(draw):
     return types.Data(
         uuid4(), draw(st.sampled_from(types.DataType)))
 @given(datums=st.lists(rand_datum()))
-@settings(max_examples=20, deadline=None)
+@settings(max_examples=20, deadline=300)
 def test_insert(datums, conn):
     skipif_none(datums, conn)
     # insert generated canonical forms of data

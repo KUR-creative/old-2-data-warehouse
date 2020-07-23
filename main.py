@@ -24,9 +24,6 @@ from dw.entity.data import manga109
 
 cfs = make.data(manga109)(m109)
 put.data(cfs)
-print(S.file(uuid=1,path=2,type=3))
-
-T.DataType.image
 '''
 with orm.session() as sess:
     id = uuid4()

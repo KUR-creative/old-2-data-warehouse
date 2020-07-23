@@ -20,12 +20,6 @@ def nt_dic(nt_obj):
     return dic
 
 #---------------------------------------------------------------
-'''
-data는 서로 관계를 가질 수 있는 정보의 단위이다.
-named_dat_rel 은 이름 붙여진 데이터 사이의 관계이다.
-dataset은 named_dat_rel 3개로 이루어진다.
-'''
-
 # https://stackoverflow.com/a/54034230
 def keyvalgen(obj):
     """ Generate attr name/val pairs, filtering out SQLA attrs."""
@@ -39,6 +33,13 @@ class ReprHelper:
         return f"{self.__class__.__name__}<{params}>"
     
 Base = declarative_base(cls=ReprHelper)
+
+#---------------------------------------------------------------
+'''
+data는 서로 관계를 가질 수 있는 정보의 단위이다.
+named_dat_rel 은 이름 붙여진 데이터 사이의 관계이다.
+dataset은 named_dat_rel 3개로 이루어진다.
+'''
 
 class data(Base):
     __tablename__ = 'data'
@@ -63,3 +64,11 @@ class source(Base):
     uuid = Column(pg.UUID(as_uuid=True), ForeignKey('data.uuid'),
                   primary_key=True)
     name = Column(String, primary_key=True, nullable=False)
+
+class data_rel(Base):
+    __tablename__ = 'data_rel'
+    aid = Column(pg.UUID(as_uuid=True), ForeignKey('data.uuid'),
+                 primary_key=True)
+    bid = Column(pg.UUID(as_uuid=True), ForeignKey('data.uuid'),
+                 primary_key=True)
+    type = Column(String) # extension

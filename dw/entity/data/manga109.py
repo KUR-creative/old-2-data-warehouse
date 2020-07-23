@@ -7,6 +7,7 @@ import funcy as F
 
 from dw.const.types import Data, DataType
 from dw.util import file_utils as fu
+from dw.util import fp
 
 
 #---------------------------------------------------------------
@@ -22,37 +23,55 @@ def valid(root):
 # root -> [load] -> [process] -> [canonical]
 # -> canonical form of data
 def load(root):
-    imgpaths = fu.descendants(imgdir(root))
-    xmlpaths = fu.descendants(xmldir(root))
+    imgpaths = fu.human_sorted(fu.descendants(imgdir(root)))
+    xmlpaths = fu.human_sorted(fu.descendants(xmldir(root)))
     return imgpaths, xmlpaths
 
 def process(loaded):
-    return loaded
+    name = lambda p: Path(p).stem
+    imgpaths, xmlpaths = loaded
+    
+    title2xmlpath = F.zipdict(map(name,xmlpaths), xmlpaths)
+    xmlpath_imgpath_pairseq = fp.go(
+        F.group_by(fu.select(-2),imgpaths), # title: [imgpaths...]
+        lambda dic: dic.items(), # (title, [imgpaths...])
+        fp.mapcat(fp.tup(
+            lambda title, imgpaths:
+            zip(F.repeat(title2xmlpath[title]), imgpaths))))
+            
+    #for xp, ip in xp_ip_pairseq:
+    #    assert name(xp) == fu.select(-2, ip)
+    return imgpaths, xmlpaths, xmlpath_imgpath_pairseq
 
 def canonical(processed) -> Optional[List[Data]]:
-    extension = lambda p: Path(p).suffix.replace('.','',1)
-    imgpaths, xmlpaths = processed
-    
-    title_imgpath_dic = F.group_by(fu.select(-2),imgpaths)
-    img_ids = list(F.repeatedly(uuid4, len(imgpaths)))
-    xml_ids = list(F.repeatedly(uuid4, len(xmlpaths)))
+    imgpaths, xmlpaths, xp_ip_pairseq = processed
+    iid = F.zipdict(
+        imgpaths, F.repeatedly(uuid4, len(imgpaths)))
+    xid = F.zipdict(
+        xmlpaths, F.repeatedly(uuid4, len(xmlpaths)))
     
     # Note: file type != extension case...
     return [
-        Data(uuid,
-             DataType.image,
-             dict(source=dict(name='manga109'),
-                  file=dict(path=p, type=extension(p))))
-        for uuid, p in zip(img_ids, imgpaths)
+        Data(
+            xid[p],
+            DataType.m109xml,
+            {'source': {'uuid':xid[p], 'name':'manga109'},
+             'file': {'uuid':xid[p],
+                      'path':p,
+                      'type':fu.extension(p)}}
+        ) for p in xmlpaths
     ] + [
-        Data(xml_id,
-             DataType.m109xml,
-             dict(source=dict(name='manga109'),
-                  file=dict(path=p, type=extension(p)),
-                  data_rel=dict(a=img_id,
-                                b=xml_id,
-                                type='img_m109xml')))
-        for img_id, xml_id, p in zip(img_ids, xml_ids, xmlpaths)
+        Data(
+            iid[ip],
+            DataType.image,
+            {'source': {'uuid':iid[ip], 'name':'manga109'},
+             'file': {'uuid':iid[ip],
+                      'path':ip,
+                      'type':fu.extension(ip)},
+             'data_rel': {'aid': iid[ip],
+                          'bid': xid[xp],
+                          'type': 'img_m109xml'}}
+        ) for xp, ip in xp_ip_pairseq
     ]
 
 #---------------------------------------------------------------

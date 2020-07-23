@@ -42,6 +42,9 @@ def select(at, path=None):
         assert -len(parts) <= at < len(parts)
         return parts[at]
 
+def extension(path):
+    return Path(path).suffix.replace('.','',1)
+    
 #---------------------------------------------------------------
 def human_sorted(iterable):
     ''' Sorts the given iterable in the way that is expected. '''
