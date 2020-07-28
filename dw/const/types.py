@@ -1,6 +1,6 @@
-from typing import NamedTuple, Mapping, Any
+from typing import NamedTuple, Mapping, Any, Optional
 from enum import Enum, auto
-import uuid
+from uuid import UUID, uuid4
 
 from parse import parse
 
@@ -23,10 +23,18 @@ class _AutoName(Enum):
     def _generate_next_value_(name, start, count, last_values):
         return name
 class DataType(_AutoName):
-    img = auto()
+    image = auto()
+    m109xml = auto()
+    
+    file = auto()
     crop = auto()
     mask = auto()
     
+    NONE = auto()
+    
 class Data(NamedTuple):
-    uuid: uuid.UUID
-    type: DataType
+    uuid: UUID = None #type: ignore 
+    # if uuid = None, then S.data(uuid = auto generated)
+    type: DataType = DataType.NONE
+    #value: Any = None
+    value: Mapping[str, Any] = {}

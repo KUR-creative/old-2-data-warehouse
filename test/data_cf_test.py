@@ -10,18 +10,22 @@ from dw.db import schema as S
 from dw.db import query as Q
 from dw.const import types
 from dw.api import put
+from dw.util.test_utils import skipif_none
 
-
-@given(datums=st.lists(st.builds(types.Data)))
-@settings(max_examples=20)
+@st.composite
+def rand_datum(draw):
+    return types.Data(
+        uuid4(), draw(st.sampled_from(types.DataType)))
+@given(datums=st.lists(rand_datum()))
+@settings(max_examples=20, deadline=300)
 def test_insert(datums, conn):
-    if conn is None: pytest.skip()
+    skipif_none(datums, conn)
     # insert generated canonical forms of data
-    orm.init(types.connection(conn))
+    orm.init(conn)
     Q.CREATE_TABLES()
     with orm.session() as sess:
-        sess.add_all(F.lmap(S.Data, datums))
+        sess.add_all(F.lmap(S.data, datums))
         # Be Careful!! sess must be in ctx manager!!!
-        for inp, out in zip(datums, sess.query(S.Data).all()):
+        for inp, out in zip(datums, sess.query(S.data).all()):
             assert inp.uuid == out.uuid
     Q.DROP_ALL()
