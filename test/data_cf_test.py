@@ -10,7 +10,8 @@ from dw.db import schema as S
 from dw.db import query as Q
 from dw.const import types
 from dw.api import put
-from dw.util.test_utils import skipif_none
+from dw.util.test_utils import env_val, skipif_none
+
 
 @st.composite
 def rand_datum(draw):
@@ -19,6 +20,7 @@ def rand_datum(draw):
 @given(datums=st.lists(rand_datum()))
 @settings(max_examples=20, deadline=300)
 def test_insert(datums, conn):
+    conn = env_val(conn=conn)
     skipif_none(datums, conn)
     # insert generated canonical forms of data
     orm.init(conn)
