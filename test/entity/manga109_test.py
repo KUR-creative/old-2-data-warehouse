@@ -75,7 +75,7 @@ def test_put_data_from_manga109(conn, m109):
         
     Q.DROP_ALL()
 
-def test_make_and_save_data_rel_chunk(conn, m109):
+def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
     conn, m109 = env_val(conn=conn), env_val(m109=m109)
     skipif_none(conn, m109)
     
@@ -117,27 +117,23 @@ def test_make_and_save_data_rel_chunk(conn, m109):
         sess.commit()
     
         # Check saved numbers
-        assert sess.query(S.data_rel_chunk).count() == total
+        assert total == sess.query(S.map_data_rel2rel_chunk).count()
         
         def assert_correct_num_of_saved_rows(name, size):
-            assert sess.query(S.data_rel_chunk).filter(
-                S.data_rel_chunk.name == name
+            assert sess.query(S.map_data_rel2rel_chunk).filter(
+                S.map_data_rel2rel_chunk.name == name
             ).count() == size
-            assert sess.query(S.data_rel_chunk).filter(
-                S.data_rel_chunk.size == size
+            assert sess.query(S.map_data_rel2rel_chunk).filter(
+                S.map_data_rel2rel_chunk.size == size
             ).count() == size
         assert_correct_num_of_saved_rows('m109.train', n_train)
         assert_correct_num_of_saved_rows('m109.dev', n_dev)
         assert_correct_num_of_saved_rows('m109.test', n_test)
         
-    Q.DROP_ALL()
-    # get relations from db
-    # naming relations and save to db
-    # get chunk from db
-    
     # assert set(relations from 3 chunks) == ma109 rels in db
 
     # create m109 dataset with 3 chunks
     # save to db
     
     # assert
+    Q.DROP_ALL()

@@ -42,9 +42,6 @@ named_dat_rel 은 이름 붙여진 데이터 사이의 관계이다.
 dataset은 named_dat_rel 3개로 이루어진다.
 '''
 
-class help: # namespace for helper functions
-    pass
-
 class data(Base):
     __tablename__ = 'data'
     uuid = Column(pg.UUID(as_uuid=True), primary_key=True, default=uuid4)
@@ -79,10 +76,9 @@ class data_rel(Base):
     
 def only_one_rel_rowseq(ids, type):
     return (data_rel(aid=id, bid=id, type=type) for id in ids)
-help.only_one_rel_rowseq = only_one_rel_rowseq
 
-class data_rel_chunk(Base):
-    __tablename__ = 'data_rel_chunk'
+class map_data_rel2rel_chunk(Base):
+    __tablename__ = 'map_data_rel2rel_chunk'
     
     name = Column(String, primary_key=True)
     revision = Column(Integer, primary_key=True)
@@ -100,10 +96,14 @@ def only_inp_chunk_rowseq(name, revision, ids):
     ex) dataset for cnet. it has only images.
     '''
     return (
-        data_rel_chunk(
+        map_data_rel2rel_chunk(
             name=name, revision=revision, size=len(ids),
             inp=id, out=id
         ) for id in ids
     )
-help.only_inp_chunk_rowseq = only_inp_chunk_rowseq
+
 #---------------------------------------------------------------
+class help:
+    ''' namespace for helper functions '''
+    only_one_rel_rowseq = only_one_rel_rowseq
+    only_inp_chunk_rowseq = only_inp_chunk_rowseq
