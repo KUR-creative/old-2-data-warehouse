@@ -4,6 +4,7 @@ from pprint import pformat
 
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import ForeignKey
+from sqlalchemy.schema import ForeignKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects import postgresql as pg
 
@@ -71,4 +72,17 @@ class data_rel(Base):
                  primary_key=True)
     bid = Column(pg.UUID(as_uuid=True), ForeignKey('data.uuid'),
                  primary_key=True)
-    type = Column(String) # extension
+    type = Column(String, nullable=False) # extension
+
+class data_rel_chunk(Base):
+    __tablename__ = 'data_rel_chunk'
+    
+    name = Column(String, primary_key=True)
+    revision = Column(Integer, primary_key=True)
+    size = Column(Integer, primary_key=True)
+    
+    inp = Column(pg.UUID(as_uuid=True), primary_key=True)
+    out = Column(pg.UUID(as_uuid=True), primary_key=True)
+
+    ForeignKeyConstraint(['inp',          'out'         ],
+                         ['data_rel.aid', 'data_rel.bid'])

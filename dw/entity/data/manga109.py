@@ -37,7 +37,8 @@ def process(loaded):
         lambda dic: dic.items(), # (title, [imgpaths...])
         fp.mapcat(fp.tup(
             lambda title, imgpaths:
-            zip(F.repeat(title2xmlpath[title]), imgpaths))))
+            zip(F.repeat(title2xmlpath[title]), imgpaths)
+        )))
             
     #for xp, ip in xp_ip_pairseq:
     #    assert name(xp) == fu.select(-2, ip)

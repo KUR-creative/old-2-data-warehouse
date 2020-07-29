@@ -11,3 +11,6 @@ def data(entity):
         processed = entity.process(loaded)
         return entity.canonical(processed)
     return fn
+
+def only_inp_chunk(ids):
+    pass
