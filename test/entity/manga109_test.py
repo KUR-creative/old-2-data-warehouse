@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+import funcy as F
 
 from dw.api import make, put
 from dw.const.types import DataType as DT
@@ -86,9 +87,6 @@ def test_make_and_save_data_rel_chunk(conn, m109):
     
     put.data(cfs)
     
-    # create only img rels(img=img) for m109 images
-    # db -> imgs
-    # imgs -> img:img rels
     with orm.session() as sess:
         img_ids = [
             x.uuid for x in sess.query(S.data.uuid).filter(
@@ -97,14 +95,11 @@ def test_make_and_save_data_rel_chunk(conn, m109):
         
         # Save img only relations
         sess.add_all(
-            S.data_rel(aid=iid, bid=iid, type='only_img')
-            for iid in img_ids)
+            S.help.only_one_rel_rowseq(img_ids, 'only_img'))
         sess.commit()
 
         # Partition train/dev/test ids
-        n_train = 70
-        n_dev = 20
-        n_test = 10
+        n_train = 70; n_dev = 20; n_test = 10
         total = n_train + n_dev + n_test
         
         train_ids = img_ids[:n_train]
@@ -112,25 +107,13 @@ def test_make_and_save_data_rel_chunk(conn, m109):
         test_ids = img_ids[n_train + n_dev: total]
         assert total == len(train_ids + dev_ids + test_ids)
 
-        # Save chunks
-        train_rows = [
-            S.data_rel_chunk(
-                name='m109.train', revision=0, size=n_train,
-                inp=iid, out=iid)
-            for iid in train_ids]
-        dev_rows = [
-            S.data_rel_chunk(
-                name='m109.dev', revision=0, size=n_dev,
-                inp=iid, out=iid)
-            for iid in dev_ids]
-        test_rows = [
-            S.data_rel_chunk(
-                name='m109.test', revision=0, size=n_test,
-                inp=iid, out=iid)
-            for iid in test_ids]
-        all_rows = train_rows + dev_rows + test_rows
-
-        sess.add_all(all_rows)
+        # Build and Save chunks
+        rowseq = S.help.only_inp_chunk_rowseq
+        train_rowseq = rowseq('m109.train', 0, train_ids)
+        dev_rowseq = rowseq('m109.dev', 0, dev_ids)
+        test_rowseq = rowseq('m109.test', 0, test_ids)
+        sess.add_all(F.concat(
+            train_rowseq, dev_rowseq, test_rowseq))
         sess.commit()
     
         # Check saved numbers
@@ -146,12 +129,9 @@ def test_make_and_save_data_rel_chunk(conn, m109):
         assert_correct_num_of_saved_rows('m109.train', n_train)
         assert_correct_num_of_saved_rows('m109.dev', n_dev)
         assert_correct_num_of_saved_rows('m109.test', n_test)
-        # assert size of chunk
-        #rows = sess.query(S.data_rel).filter(S.data_rel.type == 'only_img').all()
         
     Q.DROP_ALL()
     # get relations from db
-    # shuffle and partition in 3 parts.
     # naming relations and save to db
     # get chunk from db
     
@@ -159,4 +139,5 @@ def test_make_and_save_data_rel_chunk(conn, m109):
 
     # create m109 dataset with 3 chunks
     # save to db
-    pass
+    
+    # assert

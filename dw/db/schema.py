@@ -42,6 +42,9 @@ named_dat_rel 은 이름 붙여진 데이터 사이의 관계이다.
 dataset은 named_dat_rel 3개로 이루어진다.
 '''
 
+class help: # namespace for helper functions
+    pass
+
 class data(Base):
     __tablename__ = 'data'
     uuid = Column(pg.UUID(as_uuid=True), primary_key=True, default=uuid4)
@@ -73,6 +76,10 @@ class data_rel(Base):
     bid = Column(pg.UUID(as_uuid=True), ForeignKey('data.uuid'),
                  primary_key=True)
     type = Column(String, nullable=False) # extension
+    
+def only_one_rel_rowseq(ids, type):
+    return (data_rel(aid=id, bid=id, type=type) for id in ids)
+help.only_one_rel_rowseq = only_one_rel_rowseq
 
 class data_rel_chunk(Base):
     __tablename__ = 'data_rel_chunk'
@@ -86,3 +93,17 @@ class data_rel_chunk(Base):
 
     ForeignKeyConstraint(['inp',          'out'         ],
                          ['data_rel.aid', 'data_rel.bid'])
+    
+def only_inp_chunk_rowseq(name, revision, ids):
+    ''' 
+    Generate row sequence of only input data relation chunk. 
+    ex) dataset for cnet. it has only images.
+    '''
+    return (
+        data_rel_chunk(
+            name=name, revision=revision, size=len(ids),
+            inp=id, out=id
+        ) for id in ids
+    )
+help.only_inp_chunk_rowseq = only_inp_chunk_rowseq
+#---------------------------------------------------------------
