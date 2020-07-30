@@ -79,8 +79,8 @@ class data_relation(Base):
 def only_one_rel_rowseq(ids, type):
     return (data_relation(aid=id, bid=id, type=type) for id in ids)
 
-class map_data_rel2rel_chunk(Base):
-    __tablename__ = 'map_data_rel2rel_chunk'
+class named_relations2data_relation(Base):
+    __tablename__ = 'named_relations2data_relation'
     
     name = Column(String, primary_key=True)
     revision = Column(Integer, primary_key=True)
@@ -98,7 +98,7 @@ def only_inp_chunk_rowseq(name, revision, ids):
     ex) dataset for cnet. it has only images.
     '''
     return (
-        map_data_rel2rel_chunk(
+        named_relations2data_relation(
             name=name, revision=revision, size=len(ids),
             inp=id, out=id
         ) for id in ids

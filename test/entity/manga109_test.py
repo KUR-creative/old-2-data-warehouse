@@ -117,14 +117,15 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
         sess.commit()
     
         # Check saved numbers
-        assert total == sess.query(S.map_data_rel2rel_chunk).count()
+        named_rels2dat_rel = S.named_relations2data_relation
+        assert total == sess.query(named_rels2dat_rel).count()
         
         def assert_correct_num_of_saved_rows(name, size):
-            assert sess.query(S.map_data_rel2rel_chunk).filter(
-                S.map_data_rel2rel_chunk.name == name
+            assert sess.query(named_rels2dat_rel).filter(
+                named_rels2dat_rel.name == name
             ).count() == size
-            assert sess.query(S.map_data_rel2rel_chunk).filter(
-                S.map_data_rel2rel_chunk.size == size
+            assert sess.query(named_rels2dat_rel).filter(
+                named_rels2dat_rel.size == size
             ).count() == size
         assert_correct_num_of_saved_rows('m109.train', n_train)
         assert_correct_num_of_saved_rows('m109.dev', n_dev)
