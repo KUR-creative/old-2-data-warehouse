@@ -1,18 +1,30 @@
 from uuid import uuid4
+from typing import NamedTuple, Mapping, Any, Optional
+
+import funcy as F
 
 from dw.const import types as T
 from dw.db import schema as S
 from dw.db import orm
 from dw.db import query as Q
+from dw.util import fp
 
-from typing import NamedTuple, Mapping, Any, Optional
-print(T.Data is NamedTuple)
-print(issubclass(T.Data, NamedTuple))
-print(issubclass(NamedTuple, T.Data))
+from pprint import pprint
+#print(N)
+#pprint(fp.pub_attr_names(N))
+for attr in fp.pub_attrs(S):
+    if hasattr(attr, '__tablename__'):
+        print(attr.__name__)
 
-print(S.nt_dic(T.Data(1,2,3)))
+        
+print("g:", globals(), 'l', locals(), 'v', vars())
+#pprint(locals())
+pprint(vars())
 
-
+S.generate_names_file()
+#pprint(S.asdf)
+#pprint(S.names)
+'''
 import os
 conn = os.environ['conn']
 m109 = os.environ['m109']
@@ -24,7 +36,8 @@ from dw.entity.data import manga109
 
 cfs = make.data(manga109)(m109)
 put.data(cfs)
-'''
+
+
 with orm.session() as sess:
     id = uuid4()
     data = S.data(T.Data(id))

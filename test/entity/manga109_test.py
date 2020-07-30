@@ -61,8 +61,8 @@ def test_put_data_from_manga109(conn, m109):
         
         # Check uuids as set
         relations = sess.query(
-            S.data_rel.aid, S.data_rel.bid).filter(
-                S.data_rel.type == 'img_m109xml'
+            S.data_relation.aid, S.data_relation.bid).filter(
+                S.data_relation.type == 'img_m109xml'
             ).all()
         img_id_set = set(img_ids)
         xml_id_set = set(xml_ids)

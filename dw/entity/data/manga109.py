@@ -8,6 +8,7 @@ import funcy as F
 from dw.const.types import Data, DataType
 from dw.util import file_utils as fu
 from dw.util import fp
+from dw.db import names as T # Table
 
 
 #---------------------------------------------------------------
@@ -56,22 +57,22 @@ def canonical(processed) -> Optional[List[Data]]:
         Data(
             xid[p],
             DataType.m109xml,
-            {'source': {'uuid':xid[p], 'name':'manga109'},
-             'file': {'uuid':xid[p],
-                      'path':p,
-                      'type':fu.extension(p)}}
+            {T.source: {T.uuid:xid[p], T.name:'manga109'},
+             T.file: {T.uuid: xid[p],
+                      T.path: p,
+                      T.type: fu.extension(p)}}
         ) for p in xmlpaths
     ] + [
         Data(
             iid[ip],
             DataType.image,
-            {'source': {'uuid':iid[ip], 'name':'manga109'},
-             'file': {'uuid':iid[ip],
-                      'path':ip,
-                      'type':fu.extension(ip)},
-             'data_rel': {'aid': iid[ip],
-                          'bid': xid[xp],
-                          'type': 'img_m109xml'}}
+            {T.source: {T.uuid: iid[ip], T.name:'manga109'},
+             T.file: {T.uuid: iid[ip],
+                      T.path: ip,
+                      T.type: fu.extension(ip)},
+             T.data_relation: {T.aid: iid[ip],
+                               T.bid: xid[xp],
+                               T.type: 'img_m109xml'}}
         ) for xp, ip in xp_ip_pairseq
     ]
 
