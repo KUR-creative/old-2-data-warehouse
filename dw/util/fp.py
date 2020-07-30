@@ -29,15 +29,20 @@ def equal(*xs):
     return True
 
 def identity(x): return x
-def prop(p, obj=None):
-    return(getattr(obj, p) if (isinstance(obj,tuple) and 
-                               isinstance(p,str))
-      else obj[p] if hasattr(obj,'__getitem__')
-      else getattr(obj, p) if obj 
-      else lambda o: prop(p,o))
+
+#--------------------------------------------------------------
+def all_fn(*fs): # name from funcy
+    return F.all_fn(*fs)
+def every_pred(*ps): # name from clojure
+    return F.all_fn(*ps)
 
 def unzip(seq):
     return zip(*seq)
+
+def concat(*seqs):
+    return F.concat(*seqs)
+def lconcat(*seqs):
+    return F.lconcat(*seqs)
 
 def map(f,*seq):
     return F.map(f,*seq) if not is_empty(seq) \
@@ -172,3 +177,23 @@ def mmethod(dispatcher, result):
         wrapped.__name__ = "_" + wrapped.__name__ + "_" + str(result)
         return dispatcher
     return inner
+
+#--------------------------------------------------------------
+def is_public_name(name):
+    return not name.startswith('__')
+def attr_names(obj, pred=lambda n: True):
+    return tuple(n for n in dir(obj) if pred(n))
+def attrs(obj, get=dir):
+    return tuple(getattr(obj, name) for name in get(obj))
+
+def pub_attr_names(obj):
+    return attr_names(obj, is_public_name)
+def pub_attrs(obj):
+    return attrs(obj, pub_attr_names)
+
+def prop(p, obj=None):
+    return(getattr(obj, p) if (isinstance(obj,tuple) and 
+                               isinstance(p,str))
+      else obj[p] if hasattr(obj,'__getitem__')
+      else getattr(obj, p) if obj 
+      else lambda o: prop(p,o))
