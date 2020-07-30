@@ -107,3 +107,23 @@ class help:
     ''' namespace for helper functions '''
     only_one_rel_rowseq = only_one_rel_rowseq
     only_inp_chunk_rowseq = only_inp_chunk_rowseq
+
+def is_valid_column_name(name):
+    ''' from inspection of dir(table_classes) '''
+    return name not in {'metadata',
+                        '_sa_class_manager',
+                        '_decl_class_registry'}
+
+names = fp.go(
+    locals().values(),
+    fp.lfilter(lambda x: hasattr(x, '__tablename__')),
+    lambda classes: fp.concat(
+        (cls.__name__ for cls in classes),
+        fp.mapcat(lambda cls:
+            fp.attr_names(cls,
+                          fp.every_pred(fp.is_public_name,
+                                        is_valid_column_name)),
+            classes
+        )),
+    set,
+    list)
