@@ -132,7 +132,7 @@ def generate_names_file(out_path=Path('dw/db/names.py')):
                                    is_valid_column_name)),
                 classes
         ))
-    names = list(set(all_nameseq))
+    names = sorted(set(all_nameseq))
     code = '\n'.join([
         "'''",
         "Before import this, call schema.generate_name_file()",
