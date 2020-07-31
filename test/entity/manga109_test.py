@@ -89,12 +89,14 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
     put.data(cfs)
     
     with orm.session() as sess:
+        #------------------------------------------------------
+        # Generate relations 
         img_ids = [
             x.uuid for x in sess.query(S.data.uuid).filter(
                 S.data.type == DT.image.value).all()
         ]
         
-        # Save img only relations
+        # Save img only (identity) relations
         sess.add_all(
             S.help.identity_data_rel_rowseq(img_ids, 'only_img'))
         sess.commit()
@@ -108,7 +110,8 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
         test_ids = img_ids[n_train + n_dev: total]
         assert total == len(train_ids + dev_ids + test_ids)
 
-        # Create named_relations
+        #------------------------------------------------------
+        # Create & Save named_relations(relations' name)
         train = NamedRelations('m109.train', 0, n_train)
         dev = NamedRelations('m109.dev', 0, n_dev)
         test = NamedRelations('m109.test', 0, n_test)
@@ -118,7 +121,8 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
             S.named_relations(**test._asdict())])
         sess.commit()
         
-        # Build and Save chunks
+        #------------------------------------------------------
+        # Build and Save data_rel:rel_name relation
         rowseq = S.help.identity_named2rel_rowseq
         train_rowseq = rowseq(
             train.name, train.revision, train_ids)
@@ -126,11 +130,21 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
             dev.name, dev.revision, dev_ids)
         test_rowseq = rowseq(
             test.name, test.revision, test_ids)
-        
         sess.add_all(F.concat(
             train_rowseq, dev_rowseq, test_rowseq))
         sess.commit()
+       
+        #------------------------------------------------------
+        #Create dataset
+        def keys(prefix):
+            return F.partial(
+                F.walk_keys, lambda k: f'{prefix}_{k}')
+        sess.add(S.dataset(
+            **keys('train')(train._asdict()),
+            **keys('dev')(dev._asdict()),
+            **keys('test')(test._asdict())))
     
+        #------------------------------------------------------
         # Check saved numbers
         named_rels2dat_rel = S.named_relations2data_relation
         assert total == sess.query(named_rels2dat_rel).count()
@@ -145,14 +159,7 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
         assert_correct_num_of_saved_rows(train.name, train.size)
         assert_correct_num_of_saved_rows(dev.name, dev.size)
         assert_correct_num_of_saved_rows(test.name, test.size)
-        
-        #Create dataset
-        def keys(prefix):
-            return F.partial(
-                F.walk_keys, lambda k: f'{prefix}_{k}')
-        sess.add(S.dataset(
-            **keys('train')(train._asdict()),
-            **keys('dev')(dev._asdict()),
-            **keys('test')(test._asdict())))
+
+        # Check images: from data source = from api(db)
         
     Q.DROP_ALL()
