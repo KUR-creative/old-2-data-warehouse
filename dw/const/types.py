@@ -38,3 +38,8 @@ class Data(NamedTuple):
     type: DataType = DataType.NONE
     #value: Any = None
     value: Mapping[str, Any] = {}
+    
+class NamedRelations(NamedTuple):
+    name: str
+    revision: int
+    size: int

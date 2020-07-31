@@ -5,6 +5,7 @@ import funcy as F
 
 from dw.api import make, put
 from dw.const.types import DataType as DT
+from dw.const.types import NamedRelations
 from dw.db import orm
 from dw.db import query as Q
 from dw.db import schema as S
@@ -108,20 +109,23 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
         assert total == len(train_ids + dev_ids + test_ids)
 
         # Create named_relations
+        train = NamedRelations('m109.train', 0, n_train)
+        dev = NamedRelations('m109.dev', 0, n_dev)
+        test = NamedRelations('m109.test', 0, n_test)
         sess.add_all([
-            S.named_relations(
-                name='m109.train', revision=0, size=n_train),
-            S.named_relations(
-                name='m109.dev', revision=0, size=n_dev),
-            S.named_relations(
-                name='m109.test', revision=0, size=n_test)])
+            S.named_relations(**train._asdict()),
+            S.named_relations(**dev._asdict()),
+            S.named_relations(**test._asdict())])
         sess.commit()
         
         # Build and Save chunks
         rowseq = S.help.identity_named2rel_rowseq
-        train_rowseq = rowseq('m109.train', 0, train_ids)
-        dev_rowseq = rowseq('m109.dev', 0, dev_ids)
-        test_rowseq = rowseq('m109.test', 0, test_ids)
+        train_rowseq = rowseq(
+            train.name, train.revision, train_ids)
+        dev_rowseq = rowseq(
+            dev.name, dev.revision, dev_ids)
+        test_rowseq = rowseq(
+            test.name, test.revision, test_ids)
         sess.add_all(F.concat(
             train_rowseq, dev_rowseq, test_rowseq))
         sess.commit()
@@ -137,10 +141,12 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
             assert sess.query(named_rels2dat_rel).filter(
                 named_rels2dat_rel.size == size
             ).count() == size
-        assert_correct_num_of_saved_rows('m109.train', n_train)
-        assert_correct_num_of_saved_rows('m109.dev', n_dev)
-        assert_correct_num_of_saved_rows('m109.test', n_test)
+        assert_correct_num_of_saved_rows(train.name, train.size)
+        assert_correct_num_of_saved_rows(dev.name, dev.size)
+        assert_correct_num_of_saved_rows(test.name, test.size)
         
+        #Create dataset
+        #sess.add(S.dataset(
     #assert False
     # assert set(relations from 3 chunks) == ma109 rels in db
 
