@@ -95,7 +95,7 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
         
         # Save img only relations
         sess.add_all(
-            S.help.only_one_rel_rowseq(img_ids, 'only_img'))
+            S.help.identity_data_rel_rowseq(img_ids, 'only_img'))
         sess.commit()
 
         # Partition train/dev/test ids
@@ -108,7 +108,7 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
         assert total == len(train_ids + dev_ids + test_ids)
 
         # Build and Save chunks
-        rowseq = S.help.only_inp_chunk_rowseq
+        rowseq = S.help.identity_named2rel_rowseq
         train_rowseq = rowseq('m109.train', 0, train_ids)
         dev_rowseq = rowseq('m109.dev', 0, dev_ids)
         test_rowseq = rowseq('m109.test', 0, test_ids)

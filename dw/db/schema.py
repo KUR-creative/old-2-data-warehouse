@@ -76,8 +76,9 @@ class data_relation(Base):
                  primary_key=True)
     type = Column(String, nullable=False) # extension
     
-def only_one_rel_rowseq(ids, type):
-    return (data_relation(aid=id, bid=id, type=type) for id in ids)
+def identity_data_rel_rowseq(ids, type):
+    return (
+        data_relation(aid=id, bid=id, type=type) for id in ids)
 
 class named_relations2data_relation(Base):
     __tablename__ = 'named_relations2data_relation'
@@ -92,9 +93,12 @@ class named_relations2data_relation(Base):
     ForeignKeyConstraint(['inp',          'out'         ],
                          ['data_relation.aid', 'data_relation.bid'])
     
-def only_inp_chunk_rowseq(name, revision, ids):
+def identity_named2rel_rowseq(name, revision, ids):
     ''' 
-    Generate row sequence of only input data relation chunk. 
+    Generate row sequence of namned relations(rel=identity)
+    Identity relation means: inp = out
+    
+    Identity relation used to express 'just input' dataset
     ex) dataset for cnet. it has only images.
     '''
     return (
@@ -107,8 +111,8 @@ def only_inp_chunk_rowseq(name, revision, ids):
 #---------------------------------------------------------------
 class help:
     ''' namespace for helper functions '''
-    only_one_rel_rowseq = only_one_rel_rowseq
-    only_inp_chunk_rowseq = only_inp_chunk_rowseq
+    identity_data_rel_rowseq = identity_data_rel_rowseq
+    identity_named2rel_rowseq = identity_named2rel_rowseq
 
 def is_valid_column_name(name):
     ''' from inspection of dir(table_classes) '''
