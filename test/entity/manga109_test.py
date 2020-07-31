@@ -107,6 +107,16 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
         test_ids = img_ids[n_train + n_dev: total]
         assert total == len(train_ids + dev_ids + test_ids)
 
+        # Create named_relations
+        sess.add_all([
+            S.named_relations(
+                name='m109.train', revision=0, size=n_train),
+            S.named_relations(
+                name='m109.dev', revision=0, size=n_dev),
+            S.named_relations(
+                name='m109.test', revision=0, size=n_test)])
+        sess.commit()
+        
         # Build and Save chunks
         rowseq = S.help.identity_named2rel_rowseq
         train_rowseq = rowseq('m109.train', 0, train_ids)
