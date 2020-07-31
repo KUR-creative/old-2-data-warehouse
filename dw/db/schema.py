@@ -110,8 +110,7 @@ class named_relations2data_relation(Base):
          'named_relations.size']),
     ForeignKeyConstraint(
         ['inp',               'out'              ],
-        ['data_relation.aid', 'data_relation.bid'])
-    )
+        ['data_relation.aid', 'data_relation.bid']))
     
 def identity_named2rel_rowseq(name, revision, ids):
     ''' 
@@ -127,6 +126,38 @@ def identity_named2rel_rowseq(name, revision, ids):
             inp=id, out=id
         ) for id in ids
     )
+
+class dataset(Base):
+    __tablename__ = 'dataset'
+    
+    train_name = Column(String, primary_key=True)
+    train_revision = Column(Integer, primary_key=True)
+    train_size = Column(Integer, primary_key=True)
+    
+    dev_name = Column(String, primary_key=True)
+    dev_revision = Column(Integer, primary_key=True)
+    dev_size = Column(Integer, primary_key=True)
+    
+    test_name = Column(String, primary_key=True)
+    test_revision = Column(Integer, primary_key=True)
+    test_size = Column(Integer, primary_key=True)
+    
+    __table_args__ = (
+    ForeignKeyConstraint(
+        ['train_name', 'train_revision', 'train_size'],
+        ['named_relations.name',
+         'named_relations.revision',
+         'named_relations.size']),
+    ForeignKeyConstraint(
+        ['dev_name', 'dev_revision', 'dev_size'],
+        ['named_relations.name',
+         'named_relations.revision',
+         'named_relations.size']),
+    ForeignKeyConstraint(
+        ['test_name', 'test_revision', 'test_size'],
+        ['named_relations.name',
+         'named_relations.revision',
+         'named_relations.size']))
 
 #===============================================================
 class help:

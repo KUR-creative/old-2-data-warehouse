@@ -126,6 +126,7 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
             dev.name, dev.revision, dev_ids)
         test_rowseq = rowseq(
             test.name, test.revision, test_ids)
+        
         sess.add_all(F.concat(
             train_rowseq, dev_rowseq, test_rowseq))
         sess.commit()
@@ -146,12 +147,12 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
         assert_correct_num_of_saved_rows(test.name, test.size)
         
         #Create dataset
-        #sess.add(S.dataset(
-    #assert False
-    # assert set(relations from 3 chunks) == ma109 rels in db
-
-    # create m109 dataset with 3 chunks
-    # save to db
-    
-    # assert
+        def keys(prefix):
+            return F.partial(
+                F.walk_keys, lambda k: f'{prefix}_{k}')
+        sess.add(S.dataset(
+            **keys('train')(train._asdict()),
+            **keys('dev')(dev._asdict()),
+            **keys('test')(test._asdict())))
+        
     Q.DROP_ALL()
