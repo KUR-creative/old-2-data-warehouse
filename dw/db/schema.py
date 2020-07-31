@@ -53,6 +53,7 @@ class data(Base):
         super(data, self).__init__(**nt_dic(nt_obj)) # type: ignore
     value = None # not column, just conformance to types.data
 
+#---------------------------------------------------------------
 class file(Base):
     __tablename__ = 'file'
     uuid = Column(pg.UUID(as_uuid=True), ForeignKey('data.uuid'))
@@ -68,6 +69,13 @@ class source(Base):
                   primary_key=True)
     name = Column(String, primary_key=True, nullable=False)
 
+#---------------------------------------------------------------
+class named_relations(Base):
+    __tablename__ = 'named_relations'
+    name = Column(String, primary_key=True)
+    revision = Column(Integer, primary_key=True)
+    size = Column(Integer, primary_key=True)
+    
 class data_relation(Base):
     __tablename__ = 'data_relation'
     aid = Column(pg.UUID(as_uuid=True), ForeignKey('data.uuid'),
@@ -77,6 +85,10 @@ class data_relation(Base):
     type = Column(String, nullable=False) # extension
     
 def identity_data_rel_rowseq(ids, type):
+    '''
+    Identity relation used to express 'just input' dataset
+    ex) dataset for cnet. it has only images.
+    '''
     return (
         data_relation(aid=id, bid=id, type=type) for id in ids)
 
@@ -89,9 +101,17 @@ class named_relations2data_relation(Base):
     
     inp = Column(pg.UUID(as_uuid=True), primary_key=True)
     out = Column(pg.UUID(as_uuid=True), primary_key=True)
-
-    ForeignKeyConstraint(['inp',          'out'         ],
-                         ['data_relation.aid', 'data_relation.bid'])
+    
+    __table_args__ = (
+    ForeignKeyConstraint(
+        ['name', 'revision', 'size'],
+        ['named_relations.name',
+         'named_relations.revision',
+         'named_relations.size']),
+    ForeignKeyConstraint(
+        ['inp',               'out'              ],
+        ['data_relation.aid', 'data_relation.bid'])
+    )
     
 def identity_named2rel_rowseq(name, revision, ids):
     ''' 
@@ -108,7 +128,7 @@ def identity_named2rel_rowseq(name, revision, ids):
         ) for id in ids
     )
 
-#---------------------------------------------------------------
+#===============================================================
 class help:
     ''' namespace for helper functions '''
     identity_data_rel_rowseq = identity_data_rel_rowseq

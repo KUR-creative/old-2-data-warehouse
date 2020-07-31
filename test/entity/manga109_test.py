@@ -131,6 +131,7 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
         assert_correct_num_of_saved_rows('m109.dev', n_dev)
         assert_correct_num_of_saved_rows('m109.test', n_test)
         
+    #assert False
     # assert set(relations from 3 chunks) == ma109 rels in db
 
     # create m109 dataset with 3 chunks
