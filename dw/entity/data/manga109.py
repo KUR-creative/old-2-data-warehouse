@@ -8,6 +8,7 @@ import funcy as F
 from dw.const.types import Data, DataType
 from dw.util import file_utils as fu
 from dw.util import fp
+from dw.db import names as N # Table
 
 
 #---------------------------------------------------------------
@@ -37,7 +38,8 @@ def process(loaded):
         lambda dic: dic.items(), # (title, [imgpaths...])
         fp.mapcat(fp.tup(
             lambda title, imgpaths:
-            zip(F.repeat(title2xmlpath[title]), imgpaths))))
+            zip(F.repeat(title2xmlpath[title]), imgpaths)
+        )))
             
     #for xp, ip in xp_ip_pairseq:
     #    assert name(xp) == fu.select(-2, ip)
@@ -55,22 +57,22 @@ def canonical(processed) -> Optional[List[Data]]:
         Data(
             xid[p],
             DataType.m109xml,
-            {'source': {'uuid':xid[p], 'name':'manga109'},
-             'file': {'uuid':xid[p],
-                      'path':p,
-                      'type':fu.extension(p)}}
+            {N.source: {N.uuid:xid[p], N.name:'manga109'},
+             N.file: {N.uuid: xid[p],
+                      N.path: p,
+                      N.type: fu.extension(p)}}
         ) for p in xmlpaths
     ] + [
         Data(
             iid[ip],
             DataType.image,
-            {'source': {'uuid':iid[ip], 'name':'manga109'},
-             'file': {'uuid':iid[ip],
-                      'path':ip,
-                      'type':fu.extension(ip)},
-             'data_rel': {'aid': iid[ip],
-                          'bid': xid[xp],
-                          'type': 'img_m109xml'}}
+            {N.source: {N.uuid: iid[ip], N.name:'manga109'},
+             N.file: {N.uuid: iid[ip],
+                      N.path: ip,
+                      N.type: fu.extension(ip)},
+             N.data_relation: {N.aid: iid[ip],
+                               N.bid: xid[xp],
+                               N.type: 'img_m109xml'}}
         ) for xp, ip in xp_ip_pairseq
     ]
 
