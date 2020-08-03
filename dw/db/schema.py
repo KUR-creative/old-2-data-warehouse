@@ -1,3 +1,7 @@
+'''
+table row classes and 'COMMIT' are canonical form for DB
+with put.canonical_forms(..), we can use DB declaratively.
+'''
 from enum import Enum
 from uuid import uuid4
 from pprint import pformat
@@ -37,6 +41,7 @@ class ReprHelper:
     
 Base = declarative_base(cls=ReprHelper)
 
+COMMIT = 'COMMIT' # canonical form for session.commit(), const.
 #===============================================================
 '''
 data는 서로 관계를 가질 수 있는 정보의 단위이다.
@@ -49,9 +54,11 @@ class data(Base):
     uuid = Column(pg.UUID(as_uuid=True), primary_key=True, default=uuid4)
     type = Column(String)
 
+    '''
     def __init__(self, nt_obj):
         super(data, self).__init__(**nt_dic(nt_obj)) # type: ignore
     value = None # not column, just conformance to types.data
+    '''
 
 #---------------------------------------------------------------
 class file(Base):
@@ -172,37 +179,3 @@ def is_valid_column_name(name):
                         '_decl_class_registry'}
 
 #---------------------------------------------------------------
-def generate_names_file(out_path=Path('dw/db/names.py')):
-    # locals -> classes
-    classes = fp.lfilter(
-        lambda x: hasattr(x, '__tablename__'),
-        globals().values())
-    
-    # classes -> code
-    all_nameseq = fp.concat(
-        (cls.__name__ for cls in classes),
-        fp.mapcat(
-            lambda cls: fp.attr_names(
-                cls, fp.every_pred(fp.is_public_name,
-                                   is_valid_column_name)),
-                classes
-        ))
-    names = sorted(set(all_nameseq))
-    code = '\n'.join([
-        "'''",
-        "Before import this, call schema.generate_name_file()",
-        "Or, import schema first.",
-        "This is auto-generated file. DO NOT MODIFY!",
-        "'''",
-        *("{} = '{}'".format(n,n) for n in names)
-    ])
-    
-    # code -> file
-    old_code =(out_path.read_text() if out_path.exists()
-               else None)
-    if code != old_code:
-        with open(out_path, 'w') as f:
-            f.write(code)
-        print('dw/db/names.py updated!')
-
-generate_names_file()

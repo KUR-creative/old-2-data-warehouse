@@ -14,18 +14,6 @@ from dw.util import file_utils as fu
 from dw.util.test_utils import env_val, skipif_none
 
 
-def test_make_canonical_form_data_from_manga109(m109):
-    m109 = env_val(m109=m109)
-    skipif_none(m109)
-    
-    cfs = make.data(manga109)(m109)
-    num_imgs = len(fu.descendants(manga109.imgdir(m109)))
-    num_xmls = len(fu.descendants(manga109.xmldir(m109)))
-    
-    assert len(cfs) == num_imgs + num_xmls
-    # assert about data type
-
-#@pytest.mark.skip('...')
 def test_put_data_from_manga109(conn, m109):
     conn, m109 = env_val(conn=conn), env_val(m109=m109)
     skipif_none(conn, m109)
@@ -36,7 +24,8 @@ def test_put_data_from_manga109(conn, m109):
     Q.DROP_ALL()
     Q.CREATE_TABLES()
     
-    put.data(cfs)
+    #put.data(cfs)
+    put.canonical_forms(cfs)
     
     with orm.session() as sess:
         img_ids = [
@@ -76,6 +65,7 @@ def test_put_data_from_manga109(conn, m109):
         
     Q.DROP_ALL()
 
+@pytest.mark.skip('...')
 def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
     conn, m109 = env_val(conn=conn), env_val(m109=m109)
     skipif_none(conn, m109)
