@@ -11,13 +11,11 @@ def test_put_data_from_manga109(conn, m109):
     conn, m109 = env_val(conn=conn), env_val(m109=m109)
     skipif_none(conn, m109)
     
-    cfs = make.data(manga109)(m109)
-
     orm.init(conn)
     Q.DROP_ALL()
     Q.CREATE_TABLES()
     
-    #put.data(cfs)
+    cfs = make.data(manga109)(m109)
     put.canonical_forms(cfs)
     
     with orm.session() as sess:
@@ -58,7 +56,6 @@ def test_put_data_from_manga109(conn, m109):
         
     Q.DROP_ALL()
 
-#@pytest.mark.skip('...')
 def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
     conn, m109 = env_val(conn=conn), env_val(m109=m109)
     skipif_none(conn, m109)
