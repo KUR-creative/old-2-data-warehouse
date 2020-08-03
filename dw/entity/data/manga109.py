@@ -5,10 +5,9 @@ from uuid import uuid4
 
 import funcy as F
 
-from dw.const.types import Data, DataType
 from dw.util import file_utils as fu
 from dw.util import fp
-from dw.db import names as N # Table
+from dw.db import schema as S
 
 
 #---------------------------------------------------------------
@@ -45,36 +44,34 @@ def process(loaded):
     #    assert name(xp) == fu.select(-2, ip)
     return imgpaths, xmlpaths, xmlpath_imgpath_pairseq
 
-def canonical(processed) -> Optional[List[Data]]:
+def canonical(processed) -> Optional[List[S.Base]]:
     imgpaths, xmlpaths, xp_ip_pairseq = processed
-    iid = F.zipdict(
-        imgpaths, F.repeatedly(uuid4, len(imgpaths)))
-    xid = F.zipdict(
-        xmlpaths, F.repeatedly(uuid4, len(xmlpaths)))
+    iids = list(F.repeatedly(uuid4, len(imgpaths)))
+    xids = list(F.repeatedly(uuid4, len(xmlpaths)))
+    p2id = F.zipdict(imgpaths + xmlpaths, iids + xids)
     
-    # Note: file type != extension case...
-    return [
-        Data(
-            xid[p],
-            DataType.m109xml,
-            {N.source: {N.uuid:xid[p], N.name:'manga109'},
-             N.file: {N.uuid: xid[p],
-                      N.path: p,
-                      N.type: fu.extension(p)}}
-        ) for p in xmlpaths
-    ] + [
-        Data(
-            iid[ip],
-            DataType.image,
-            {N.source: {N.uuid: iid[ip], N.name:'manga109'},
-             N.file: {N.uuid: iid[ip],
-                      N.path: ip,
-                      N.type: fu.extension(ip)},
-             N.data_relation: {N.aid: iid[ip],
-                               N.bid: xid[xp],
-                               N.type: 'img_m109xml'}}
-        ) for xp, ip in xp_ip_pairseq
-    ]
+    xp_ip_pairs = list(xp_ip_pairseq)
+    return F.concat(
+        # xml
+        (S.data(uuid=id, type='m109xml') for id in xids),
+        [S.COMMIT],
+        (S.source(uuid=id, name='manga109') for id in xids),
+        (S.file(uuid=p2id[p],
+                path=p,
+                type=fu.extension(p)) for p in xmlpaths),
+        # img, TODO: add image table
+        (S.data(uuid=id, type='image') for id in iids),
+        [S.COMMIT],
+        (S.source(uuid=id, name='manga109') for id in iids),
+        (S.file(uuid=p2id[p],
+                path=p,
+                type=fu.extension(p)) for p in imgpaths),
+                 # Note: file type != extension case...
+        (S.data_relation(
+            aid=p2id[ip],
+            bid=p2id[xp],
+            type='img_m109xml') for xp, ip in xp_ip_pairs)
+    )
 
 #---------------------------------------------------------------
 # get.data functions

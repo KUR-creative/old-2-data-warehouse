@@ -1,7 +1,6 @@
 import os
 
 import pytest
-import funcy as F
 
 
 def skipif_none(*candidates):

@@ -1,6 +1,4 @@
-from typing import NamedTuple, Mapping, Any, Optional
-from enum import Enum, auto
-from uuid import UUID, uuid4
+from typing import NamedTuple
 
 from parse import parse
 
@@ -19,6 +17,7 @@ def connection(conn_str: str):
 
 #---------------------------------------------------------------
 # Types for DB
+'''
 class _AutoName(Enum):
     def _generate_next_value_(name, start, count, last_values):
         return name
@@ -31,15 +30,4 @@ class DataType(_AutoName):
     mask = auto()
     
     NONE = auto()
-    
-class Data(NamedTuple):
-    uuid: UUID = None #type: ignore 
-    # if uuid = None, then S.data(uuid = auto generated)
-    type: DataType = DataType.NONE
-    #value: Any = None
-    value: Mapping[str, Any] = {}
-    
-class NamedRelations(NamedTuple):
-    name: str
-    revision: int
-    size: int
+'''
