@@ -1,6 +1,4 @@
-from typing import NamedTuple, Mapping, Any, Optional
-from enum import Enum, auto
-from uuid import UUID, uuid4
+from typing import NamedTuple
 
 from parse import parse
 

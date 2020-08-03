@@ -1,6 +1,5 @@
 from dw.db import orm
 from dw.db import schema as S
-from dw.util import fp
 
 def canonical_forms(cfseq):
     with orm.session() as sess:

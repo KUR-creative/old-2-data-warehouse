@@ -2,10 +2,7 @@
 table row classes and 'COMMIT' are canonical form for DB
 with put.canonical_forms(..), we can use DB declaratively.
 '''
-from enum import Enum
 from uuid import uuid4
-from pprint import pformat
-from pathlib import Path
 
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import ForeignKey
@@ -13,8 +10,6 @@ from sqlalchemy.schema import ForeignKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects import postgresql as pg
 
-from dw.const import types
-from dw.util import fp
 
 #---------------------------------------------------------------
 def keyvalgen(obj): # https://stackoverflow.com/a/54034230

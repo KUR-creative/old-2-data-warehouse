@@ -1,4 +1,3 @@
-from pathlib import Path
 
 import pytest
 import funcy as F
@@ -8,7 +7,6 @@ from dw.db import orm
 from dw.db import query as Q
 from dw.db import schema as S
 from dw.entity.data import manga109
-from dw.util import file_utils as fu
 from dw.util.test_utils import env_val, skipif_none
 
 
