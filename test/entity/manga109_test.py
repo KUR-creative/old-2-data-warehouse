@@ -4,8 +4,6 @@ import pytest
 import funcy as F
 
 from dw.api import make, put
-from dw.const.types import DataType as DT
-from dw.const.types import NamedRelations
 from dw.db import orm
 from dw.db import query as Q
 from dw.db import schema as S
@@ -31,11 +29,11 @@ def test_put_data_from_manga109(conn, m109):
         img_ids = [
             x.uuid for x in
             sess.query(S.data.uuid).filter(
-                S.data.type == DT.image.value).all()]
+                S.data.type == 'image').all()] # TODO: remove magic-string
         xml_ids = [
             x.uuid for x in
             sess.query(S.data.uuid).filter(
-            S.data.type == DT.m109xml.value).all()]
+                S.data.type == 'm109xml').all()] # TODO: remove magic-string
         
         # Check number of uuids
         num_data = sess.query(S.data).count()
@@ -76,14 +74,14 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
     Q.DROP_ALL()
     Q.CREATE_TABLES()
     
-    put.data(cfs)
+    put.canonical_forms(cfs)
     
     with orm.session() as sess:
         #------------------------------------------------------
         # Generate relations 
         img_ids = [
             x.uuid for x in sess.query(S.data.uuid).filter(
-                S.data.type == DT.image.value).all()
+                S.data.type == 'image').all() # TODO: remove magic-string
         ]
         
         # Save img only (identity) relations

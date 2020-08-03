@@ -5,10 +5,8 @@ from uuid import uuid4
 
 import funcy as F
 
-from dw.const.types import Data, DataType
 from dw.util import file_utils as fu
 from dw.util import fp
-from dw.db import names as N # Table
 from dw.db import schema as S
 
 
@@ -46,7 +44,7 @@ def process(loaded):
     #    assert name(xp) == fu.select(-2, ip)
     return imgpaths, xmlpaths, xmlpath_imgpath_pairseq
 
-def canonical(processed) -> Optional[List[Data]]:
+def canonical(processed) -> Optional[List[S.Base]]:
     imgpaths, xmlpaths, xp_ip_pairseq = processed
     iids = list(F.repeatedly(uuid4, len(imgpaths)))
     xids = list(F.repeatedly(uuid4, len(xmlpaths)))
@@ -56,14 +54,14 @@ def canonical(processed) -> Optional[List[Data]]:
     return F.concat(
         # xml
         (S.data(uuid=id, type='m109xml') for id in xids),
-        ['COMMIT'],
+        [S.COMMIT],
         (S.source(uuid=id, name='manga109') for id in xids),
         (S.file(uuid=p2id[p],
                 path=p,
                 type=fu.extension(p)) for p in xmlpaths),
         # img, TODO: add image table
         (S.data(uuid=id, type='image') for id in iids),
-        ['COMMIT'],
+        [S.COMMIT],
         (S.source(uuid=id, name='manga109') for id in iids),
         (S.file(uuid=p2id[p],
                 path=p,
