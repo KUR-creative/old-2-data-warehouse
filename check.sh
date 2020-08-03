@@ -2,5 +2,9 @@
 # m109=/path/to/manga109/dataset/root
 # export conn
 # export m109
+
+# pip install pyflakes, autoflake
+autoflake --remove-all-unused-imports -r --in-place . 
 pytest --conn $conn --m109 $m109
 mypy 
+pyflakes .
