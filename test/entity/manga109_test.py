@@ -3,6 +3,7 @@ from dw.db import orm
 from dw.db import query as Q
 from dw.db import schema as S
 from dw.entity.data import manga109, image_only_relations
+from dw.entity.dataset import tmp_cnet_dset
 from dw.util.test_utils import env_val, skipif_none
 
 
@@ -70,7 +71,8 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
     put.canonical_forms( make.data(manga109)(m109) )
     
     # Put additional data to generate dataset
-    put.canonical_forms( make.data(image_only_relations)() )
+    cfseq = make.data(image_only_relations)()
+    put.canonical_forms(cfseq)
     # Check img-img relations
     with orm.session() as sess:
         img_rels = [(row.aid, row.bid) for row in 
@@ -87,83 +89,12 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
         == sorted(img_ids)
 
     # Make and Put dataset
-    #put.dataset( make.dataset(dset)(test_cnet_dset) )
+    put.canonical_forms( make.dataset(tmp_cnet_dset)() )
     # Check tables
-    
-    '''
     with orm.session() as sess:
-        #------------------------------------------------------
-        # Generate relations 
-        img_ids = [
-            x.uuid for x in sess.query(S.data.uuid).filter(
-                S.data.type == 'image').all() # TODO: remove magic-string
-        ]
-        
-        # Save img only (identity) relations
-        sess.add_all(
-            S.help.identity_data_rel_rowseq(img_ids, 'only_img'))
-        sess.commit()
-
-        # Partition train/dev/test ids
-        n_train = 70; n_dev = 20; n_test = 10
-        total = n_train + n_dev + n_test
-        
-        train_ids = img_ids[:n_train]
-        dev_ids = img_ids[n_train: n_train + n_dev]
-        test_ids = img_ids[n_train + n_dev: total]
-        assert total == len(train_ids + dev_ids + test_ids)
-
-        #------------------------------------------------------
-        # Create & Save named_relations(relations' name)
-        train = NamedRelations('m109.train', 0, n_train)
-        dev = NamedRelations('m109.dev', 0, n_dev)
-        test = NamedRelations('m109.test', 0, n_test)
-        sess.add_all([
-            S.named_relations(**train._asdict()),
-            S.named_relations(**dev._asdict()),
-            S.named_relations(**test._asdict())])
-        sess.commit()
-        
-        #------------------------------------------------------
-        # Build and Save data_rel:rel_name relation
-        rowseq = S.help.identity_named2rel_rowseq
-        train_rowseq = rowseq(
-            train.name, train.revision, train_ids)
-        dev_rowseq = rowseq(
-            dev.name, dev.revision, dev_ids)
-        test_rowseq = rowseq(
-            test.name, test.revision, test_ids)
-        sess.add_all(F.concat(
-            train_rowseq, dev_rowseq, test_rowseq))
-        sess.commit()
-       
-        #------------------------------------------------------
-        #Create dataset
-        def keys(prefix):
-            return F.partial(
-                F.walk_keys, lambda k: f'{prefix}_{k}')
-        sess.add(S.dataset(
-            **keys('train')(train._asdict()),
-            **keys('dev')(dev._asdict()),
-            **keys('test')(test._asdict())))
-    
-        #------------------------------------------------------
-        # Check saved numbers
-        named_rels2dat_rel = S.named_relations2data_relation
-        assert total == sess.query(named_rels2dat_rel).count()
-        
-        def assert_correct_num_of_saved_rows(name, size):
-            assert sess.query(named_rels2dat_rel).filter(
-                named_rels2dat_rel.name == name
-            ).count() == size
-            assert sess.query(named_rels2dat_rel).filter(
-                named_rels2dat_rel.size == size
-            ).count() == size
-        assert_correct_num_of_saved_rows(train.name, train.size)
-        assert_correct_num_of_saved_rows(dev.name, dev.size)
-        assert_correct_num_of_saved_rows(test.name, test.size)
-
-        # Check images: from data source = from api(db)
+        assert sess.query(S.named_relations).count() == 3
+        assert sess.query(S.named_relations2data_relation).count() \
+            == 100
+        assert sess.query(S.dataset).count() == 1
         
     Q.DROP_ALL()
-    '''
