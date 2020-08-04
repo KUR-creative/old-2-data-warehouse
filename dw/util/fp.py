@@ -17,16 +17,21 @@ def take(n, seq=None):
     else lambda xs: F.take(n,xs)
 
 def plus(*xs):
+    if not xs:
+        return 0
     ret = xs[0]
     for x in xs[1:]:
         ret = ret + x
     return ret
 
 def equal(*xs):
-    for a,b in F.pairwise(xs):
-        if a != b:
-            return False
-    return True
+    if len(xs) == 1:
+        return lambda *ys: equal(xs[0], *ys)
+    else:
+        for a,b in F.pairwise(xs):
+            if a != b:
+                return False
+        return True
 
 def identity(x): return x
 
