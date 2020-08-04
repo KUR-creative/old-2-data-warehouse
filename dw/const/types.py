@@ -23,7 +23,8 @@ class _AutoName(Enum):
         return name
     
 class FileType(_AutoName):
-    mask01 = auto()
+    npimg = auto()
+    folder = auto()
 '''
 class DataType(_AutoName):
     image = auto()
