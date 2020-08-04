@@ -15,7 +15,7 @@ def test_plus_int(xs):
 
 @st.composite
 def gen(draw):
-    val = draw(st.from_type(Union[int, str]))
+    val = draw(st.from_type(Union[int, str])) # type: ignore
     num = draw(st.integers(min_value=0, max_value=100))
     return [val] * num
 @given(gen())
