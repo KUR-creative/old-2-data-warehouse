@@ -36,6 +36,7 @@ def canonical(processed):
     easy_dir, hard_dir, easy_paths, hard_paths = processed
     easy_ids = list(F.repeatedly(uuid4, len(easy_paths)))
     hard_ids = list(F.repeatedly(uuid4, len(hard_paths)))
+    paths = easy_paths + hard_paths
     ids = easy_ids + hard_ids
     return F.concat(
         (S.data(uuid=id, type='mask') for id in ids),
@@ -44,6 +45,9 @@ def canonical(processed):
          for id in easy_ids),
         (S.annotation(uuid=id, type='text.mask', group='hard')
          for id in hard_ids),
+        (S.file(uuid=id, path=path, type=fu.extension(path))
+         for id, path in zip(ids, paths)),
+        (S.source(uuid=id, name='old_snet') for id in ids),
     )
 
 #---------------------------------------------------------------

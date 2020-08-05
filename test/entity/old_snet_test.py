@@ -40,18 +40,23 @@ def test_make_and_save_old_snet_data(conn, snet):
     # before put.cfs
     with orm.session() as sess:
         prev_num_data = sess.query(S.data).count()
-    num_files = len(easy_paths) + len(hard_paths)
+        prev_num_files = sess.query(S.file).count()
+    num_added = len(easy_paths) + len(hard_paths)
     # Add masks to DB # Use annotation table
     put.canonical_forms( make.data(old_snet)(snet) )
     # Check DB and compare with image, masks from file system
     with orm.session() as sess:
         # check data(type = mask)
         num_data = sess.query(S.data).count()
-        assert num_files == num_data - prev_num_data
+        assert num_added == num_data - prev_num_data
         # check annotation
-        assert num_files == sess.query(S.annotation).count()
+        assert num_added == sess.query(S.annotation).count()
         # check file
+        num_files = sess.query(S.file).count()
+        assert num_added == num_files - prev_num_files
         # check source
+        assert num_added == sess.query(S.source).filter(
+            S.source.name == 'old_snet').count()
         # check data_relation
     
     #shutil.rmtree(dst_dir)
