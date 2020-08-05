@@ -1,5 +1,3 @@
-
-
 from dw.db import schema as S
 from dw.util import fp
 

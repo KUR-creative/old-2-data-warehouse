@@ -1,3 +1,4 @@
+from enum import Enum, auto
 from typing import NamedTuple
 
 from parse import parse
@@ -16,11 +17,15 @@ def connection(conn_str: str):
     return Connection(*parsed) if parsed else None
 
 #---------------------------------------------------------------
-# Types for DB
-'''
+# Enumerte types
 class _AutoName(Enum):
     def _generate_next_value_(name, start, count, last_values):
         return name
+    
+class FileType(_AutoName):
+    npimg = auto()
+    folder = auto()
+'''
 class DataType(_AutoName):
     image = auto()
     m109xml = auto()

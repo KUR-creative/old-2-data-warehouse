@@ -49,6 +49,14 @@ class source(Base):
                   primary_key=True)
     name = Column(String, primary_key=True, nullable=False)
 
+class annotation(Base):
+    __tablename__ = 'annotation'
+    uuid = Column(pg.UUID(as_uuid=True), ForeignKey('data.uuid'),
+                  primary_key=True)
+    type = Column(String) # Annotation type
+    group = Column(String) # Same type of anno, but different.
+                           # Commonly used for class of data
+
 #---------------------------------------------------------------
 class named_relations(Base):
     __tablename__ = 'named_relations'
