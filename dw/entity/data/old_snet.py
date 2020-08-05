@@ -17,25 +17,10 @@ def valid(root_dir):
     return True
 
 def load(root_dir):
-    # image info from DB
-    '''
-    with orm.session() as sess:
-        sess.query(S.file.path, S.file.uuid).filter(
-            S.file.type
-    '''
-    # mask info from fs
-    #img_dir = 
     img_paths = fu.children(Path(root_dir, 'image'))
     img_to = fu.replace1('image')
     easy_paths = [img_to('easy', p) for p in img_paths]
     hard_paths = [img_to('hard', p) for p in img_paths]
-    
-    '''
-    easy_paths = fu.children(easy_dir)
-    hard_paths = fu.children(hard_dir)
-    for i,e,h in zip(img_paths, easy_paths, hard_paths):
-        print(i,'|', e, '|', h)
-    '''
     return img_paths, easy_paths, hard_paths
 
 def process(loaded):
@@ -62,6 +47,11 @@ def canonical(processed):
          for id in easy_ids),
         (S.annotation(uuid=id, type='text.mask', group='hard')
          for id in hard_ids),
+        # relations
+        (S.data_relation(aid=iid, bid=eid, type='img_mask')
+         for iid, eid in zip(img_ids, easy_ids)),
+        (S.data_relation(aid=iid, bid=hid, type='img_mask')
+         for iid, hid in zip(img_ids, hard_ids)),
     )
 
 #---------------------------------------------------------------

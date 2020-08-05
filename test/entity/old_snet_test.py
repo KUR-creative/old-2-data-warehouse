@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 
 import imagesize
@@ -64,10 +65,7 @@ def test_make_and_save_old_snet_data(conn, snet):
         # check annotation
         assert num_masks == sess.query(S.annotation).count()
         # check data_relation
-        #num_rels = sess.query(S.data_relation).count()
-        #assert num_added == num_rels - prev_num_rels
+        num_rels = sess.query(S.data_relation).count()
+        assert num_masks == num_rels - prev_num_rels
 
-    #shutil.rmtree(dst_dir)
-    #assert not dst_dir.exists()
-    
     Q.DROP_ALL()
