@@ -17,37 +17,51 @@ def valid(root_dir):
     return True
 
 def load(root_dir):
+    # image info from DB
+    '''
+    with orm.session() as sess:
+        sess.query(S.file.path, S.file.uuid).filter(
+            S.file.type
+    '''
     # mask info from fs
-    easy_dir = Path(root_dir, 'easy')
-    hard_dir = Path(root_dir, 'hard')
+    #img_dir = 
+    img_paths = fu.children(Path(root_dir, 'image'))
+    img_to = fu.replace1('image')
+    easy_paths = [img_to('easy', p) for p in img_paths]
+    hard_paths = [img_to('hard', p) for p in img_paths]
+    
+    '''
     easy_paths = fu.children(easy_dir)
     hard_paths = fu.children(hard_dir)
-    # image info from DB
-    with orm.session() as sess:
-        pass
-        #sess.query(S.file.path, S.
-    return easy_dir, hard_dir, easy_paths, hard_paths
+    for i,e,h in zip(img_paths, easy_paths, hard_paths):
+        print(i,'|', e, '|', h)
+    '''
+    return img_paths, easy_paths, hard_paths
 
 def process(loaded):
-    easy_dir, hard_dir, easy_paths, hard_paths = loaded
+    img_paths, easy_paths, hard_paths = loaded
     return loaded
 
 def canonical(processed):
-    easy_dir, hard_dir, easy_paths, hard_paths = processed
+    img_paths, easy_paths, hard_paths = processed
+    img_ids = list(F.repeatedly(uuid4, len(img_paths)))
     easy_ids = list(F.repeatedly(uuid4, len(easy_paths)))
     hard_ids = list(F.repeatedly(uuid4, len(hard_paths)))
-    paths = easy_paths + hard_paths
-    ids = easy_ids + hard_ids
+    
+    paths = img_paths + easy_paths + hard_paths
+    ids = img_ids + easy_ids + hard_ids
     return F.concat(
+        # all
         (S.data(uuid=id, type='mask') for id in ids),
         [S.COMMIT],
+        (S.file(uuid=id, path=path, type=fu.extension(path))
+         for id, path in zip(ids, paths)),
+        (S.source(uuid=id, name='old_snet') for id in ids),
+        # mask
         (S.annotation(uuid=id, type='text.mask', group='easy')
          for id in easy_ids),
         (S.annotation(uuid=id, type='text.mask', group='hard')
          for id in hard_ids),
-        (S.file(uuid=id, path=path, type=fu.extension(path))
-         for id, path in zip(ids, paths)),
-        (S.source(uuid=id, name='old_snet') for id in ids),
     )
 
 #---------------------------------------------------------------
