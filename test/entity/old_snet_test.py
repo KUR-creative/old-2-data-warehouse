@@ -5,6 +5,7 @@ import imagesize
 from dw.api import make, put
 from dw.entity.data import old_snet
 from dw.db import orm
+from dw.db import schema as S
 from dw.db import query as Q
 from dw.util.test_utils import env_val, skipif_none
 from dw.util import file_utils as fu
@@ -36,8 +37,21 @@ def test_make_and_save_old_snet_data(conn, snet):
     hard_sizes = [imagesize.get(p) for p in hard_paths]
     assert easy_sizes == hard_sizes
 
+    # before put.cfs
+    with orm.session() as sess:
+        prev_num_data = sess.query(S.data).count()
     # Add masks to DB # Use annotation table
+    put.canonical_forms( make.data(old_snet)(snet) )
     # Check DB and compare with image, masks from file system
+    with orm.session() as sess:
+        # check data(type = mask)
+        num_data = sess.query(S.data).count()
+        num_added = len(easy_paths) + len(hard_paths)
+        assert num_data - prev_num_data == num_added
+        # check annotation
+        # check file
+        # check source
+        # check data_relation
     
     #shutil.rmtree(dst_dir)
     #assert not dst_dir.exists()

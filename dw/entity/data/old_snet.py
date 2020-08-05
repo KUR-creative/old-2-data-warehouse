@@ -1,12 +1,46 @@
 from pathlib import Path
+from uuid import uuid4
 
 import cv2
 import numpy as np 
+import funcy as F
 
 from dw.const.types import FileType
+from dw.db import orm
+from dw.db import schema as S
 from dw.util import file_utils as fu
 from dw.util import fp
 
+#---------------------------------------------------------------
+def valid(root_dir):
+    '''[valid] <- data root: is valid?'''
+    return True
+
+def load(root_dir):
+    # mask info from fs
+    easy_dir = Path(root_dir, 'easy')
+    hard_dir = Path(root_dir, 'hard')
+    easy_paths = fu.children(easy_dir)
+    hard_paths = fu.children(hard_dir)
+    # image info from DB
+    with orm.session() as sess:
+        pass
+        #sess.query(S.file.path, S.
+    return easy_dir, hard_dir, easy_paths, hard_paths
+
+def process(loaded):
+    easy_dir, hard_dir, easy_paths, hard_paths = loaded
+    return loaded
+
+def canonical(processed):
+    easy_dir, hard_dir, easy_paths, hard_paths = processed
+    ids = list(F.repeatedly(uuid4, len(easy_paths + hard_paths)))
+    #easy_ids = list(F.repeatedly(uuid4, len(easy_paths)))
+    #hard_ids = list(F.repeatedly(uuid4, len(hard_paths)))
+    return F.concat(
+        (S.data(uuid=id, type='mask') for id in ids))
+
+#---------------------------------------------------------------
 class mask_file:
     @staticmethod
     def valid(root_dir):
