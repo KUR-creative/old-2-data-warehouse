@@ -24,16 +24,19 @@ def load(root_dir):
 
 def process(loaded):
     img_paths, easy_paths, hard_paths = loaded
-    return loaded
-
-def canonical(processed):
-    img_paths, easy_paths, hard_paths = processed
     img_ids = list(F.repeatedly(uuid4, len(img_paths)))
     easy_ids = list(F.repeatedly(uuid4, len(easy_paths)))
     hard_ids = list(F.repeatedly(uuid4, len(hard_paths)))
-    
     paths = img_paths + easy_paths + hard_paths
     ids = img_ids + easy_ids + hard_ids
+    return (img_paths, easy_paths, hard_paths,
+            img_ids, easy_ids, hard_ids,
+            paths, ids)
+
+def canonical(processed):
+    (img_paths, easy_paths, hard_paths,
+     img_ids, easy_ids, hard_ids,
+     paths, ids) = processed
     return F.concat(
         # all
         (S.data(uuid=id, type='mask') for id in ids),

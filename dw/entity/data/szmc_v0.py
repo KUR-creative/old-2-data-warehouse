@@ -39,15 +39,19 @@ def load(root_dir, add_images: bool): # = True
     return org_paths, mask1bit_paths
 
 def process(loaded):
-    return loaded
-
-def canonical(processed) -> Optional[List[S.Base]]:
-    img_paths, mask_paths = processed
+    img_paths, mask_paths = loaded
     img_ids = list(F.repeatedly(uuid4, len(img_paths)))
     mask_ids = list(F.repeatedly(uuid4, len(mask_paths)))
-    
     paths = img_paths + mask_paths
     ids = img_ids + mask_ids
+    return (img_paths, mask_paths,
+            img_ids, mask_ids,
+            paths, ids)
+
+def canonical(processed) -> Optional[List[S.Base]]:
+    (img_paths, mask_paths,
+     img_ids, mask_ids,
+     paths, ids) = processed
     return F.concat(
         # all
         (S.data(uuid=id, type='mask') for id in ids),
