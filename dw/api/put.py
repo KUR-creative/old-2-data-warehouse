@@ -19,6 +19,7 @@ def canonical_forms(cfseq):
 
 @overload
 def _write(type: fp.equal(FT.npimg), path, mask, exist_ok=False):
+    #print(':',type(mask), 'l', len(mask))
     cv2.imwrite(path, mask, [cv2.IMWRITE_PNG_BILEVEL, 1])
 
 @overload
