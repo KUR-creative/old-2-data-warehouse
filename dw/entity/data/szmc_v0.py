@@ -15,21 +15,52 @@ from dw.util import fp
 
 #---------------------------------------------------------------
 # make.data functions
-def valid(root, add_images: bool):
-    '''[valid] <- data root: is valid?'''
+def valid(root_dir, add_images: bool): # = True
+    '''
+    [valid] <- data root: is valid?
+    add_images means: add generated images in 'images' folder
+    '''
     # Check 1:1 mapping.
     return True
 
 # root -> [load] -> [process] -> [canonical]
 # -> canonical form of data
-def load(root, add_images: bool):
-    return root
+def load(root_dir, add_images: bool): # = True
+    '''
+    add_images means: add generated images in 'images' folder
+    '''
+    org_dir = 'prev_images'
+    org_paths = fu.children(Path(root_dir, org_dir))
+    mask1bit_paths = fp.go(
+        org_paths,
+        fp.map(fu.replace1(org_dir, 'mask1bit')),
+        fp.map(lambda p: Path(p).with_suffix('.png')),
+        fp.lmap(str))
+    return org_paths, mask1bit_paths
 
 def process(loaded):
     return loaded
 
 def canonical(processed) -> Optional[List[S.Base]]:
-    return processed
+    img_paths, mask_paths = processed
+    img_ids = list(F.repeatedly(uuid4, len(img_paths)))
+    mask_ids = list(F.repeatedly(uuid4, len(mask_paths)))
+    
+    paths = img_paths + mask_paths
+    ids = img_ids + mask_ids
+    return F.concat(
+        # all
+        (S.data(uuid=id, type='mask') for id in ids),
+        [S.COMMIT],
+        (S.file(uuid=id, path=path, type=fu.extension(path))
+         for id, path in zip(ids, paths)),
+        (S.source(uuid=id, name='szmc_v0') for id in ids),
+        # mask
+        (S.annotation(uuid=id, type='text.mask', group='all')
+         for id in mask_ids),
+        # relations
+        (S.data_relation(aid=iid, bid=mid, type='img_mask')
+         for iid, mid in zip(img_ids, mask_ids)))
 
 #---------------------------------------------------------------
 class mask_file: # TODO: simmilar to old_snet.mask_file ..
