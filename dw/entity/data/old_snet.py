@@ -6,7 +6,6 @@ import numpy as np
 import funcy as F
 
 from dw.const.types import FileType
-from dw.db import orm
 from dw.db import schema as S
 from dw.util import file_utils as fu
 from dw.util import fp
