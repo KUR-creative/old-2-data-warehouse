@@ -24,12 +24,12 @@ def init(connection, note=None):
     
     args: 
     connection: string 'id:pw@host:port/dbname' format
-    note: note for running command. If not None, it be logged.
+    note: note for running command. If not None, it is logged.
     '''
     from dw.db import orm
     from dw.db import query as Q
+    from dw.ui import log
 
     orm.init(connection)
+    log.cli_cmd()
     Q.CREATE_TABLES()
-
-    print(note)
