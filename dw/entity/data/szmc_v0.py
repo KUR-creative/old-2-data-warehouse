@@ -26,9 +26,9 @@ def valid(root_dir, add_images: bool): # = True
 # root -> [load] -> [process] -> [canonical]
 # -> canonical form of data
 def load(root_dir, add_images: bool): # = True
-    '''
-    add_images means: add generated images in 'images' folder
-    '''
+    ''' add_images:
+    if True, then add generated images in 'images' folder.
+    if False, skip adding images in 'images' folder '''
     org_dir = 'prev_images'
     org_paths = fu.children(Path(root_dir, org_dir))
     mask1bit_paths = fp.go(

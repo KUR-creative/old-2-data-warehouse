@@ -14,6 +14,7 @@ ex) $ python main.py generate easy_only --help | column
 to dev: Don't forget to edit docstring when functions changed!
 '''
 
+
 def init(connection, note=None):
     '''
     Initialize DB. Schema is defined in dw.db.schema
