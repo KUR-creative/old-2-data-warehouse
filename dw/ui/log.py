@@ -7,13 +7,13 @@ from dw.db import orm
 
 
 connect_re = re.compile('.+:.+@.+:[0-9]+\/.+') # very generous
-def cli_cmd(connection, note=None):
+def cli_cmd(conn, note=None):
     ''' 
     Note - It uses command from sys.argv.
     So it doesn't need explicit command information in args.
     
     args:
-    connection: db spec, string 'id:pw@host:port/dbname' format
+    conn: db spec, string 'id:pw@host:port/dbname' format
     note: note for running command. If not None, it is logged.
     '''
     safe_argv = [
