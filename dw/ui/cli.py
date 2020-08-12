@@ -64,6 +64,7 @@ class data(object):
         
         name of directories in images and manga109-annotations 
         must be same in each directories.
+        
         [result]
         It save all images and annotation xmls to DB.
         
@@ -80,6 +81,7 @@ class data(object):
         orm.init(conn)
         put.canonical_forms( make.data(manga109)(root) )
         log.cli_cmd(conn, note)
+        return '------ Success ------ '
 
     def old_snet(self, conn, root, note=None):
         '''
@@ -104,6 +106,9 @@ class data(object):
         │   └── 284.png
         └── map.json
         
+        [result]
+        It save all images and masks to DB.
+        
         args: 
         conn: connection str. 'id:pw@host:port/dbname' format.
         root: root directory path string of data.
@@ -117,6 +122,7 @@ class data(object):
         orm.init(conn)
         put.canonical_forms( make.data(old_snet)(root) )
         log.cli_cmd(conn, note)
+        return '------ Success ------ '
 
     def szmc_v0(self, conn, root, note=None):
         '''
@@ -175,3 +181,4 @@ class data(object):
             make.data(szmc_v0)(root, False) )
         
         log.cli_cmd(conn, note)
+        return '------ Success ------ '
