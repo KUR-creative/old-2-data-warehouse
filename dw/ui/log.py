@@ -27,7 +27,7 @@ def cli_cmd(connection, note=None):
              safe_argv)]
     )
     
-    save_command(cmd)
+    save_command(cmd, note)
     
 #---------------------------------------------------------------
 def save_command(cmd, note=None):

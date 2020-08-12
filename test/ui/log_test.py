@@ -16,12 +16,14 @@ def test_logging_cli_cmd(conn):
     import sys
     origin_argv = sys.argv 
     sys.argv = ['main.py', conn, 'data', 'manga109', '$m109']
-    log.cli_cmd(conn)
+    note = 'note for test'
+    log.cli_cmd(conn, note)
     sys.argv = origin_argv
     
     with orm.session() as sess:
         row = sess.query(S.executed_command).first()
         assert '<connection>' in row.command
+        assert row.note == note
         
     Q.DROP_ALL()
     
