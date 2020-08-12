@@ -53,9 +53,11 @@ def canonical(processed) -> Optional[List[S.Base]]:
      img_ids, mask_ids,
      paths, ids) = processed
     return F.concat(
-        # all
-        (S.data(uuid=id, type='mask') for id in ids),
+        # ids first
+        (S.data(uuid=id, type='image') for id in img_ids),
+        (S.data(uuid=id, type='mask') for id in mask_ids),
         [S.COMMIT],
+        # all
         (S.file(uuid=id, path=path, type=fu.extension(path))
          for id, path in zip(ids, paths)),
         (S.source(uuid=id, name='szmc_v0') for id in ids),
