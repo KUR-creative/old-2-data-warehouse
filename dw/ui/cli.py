@@ -11,7 +11,9 @@ If you want to dump help page to stdout, use linux cmd: column.
 ex) $ python main.py generate easy_only --help | column
 
 ----
-to dev: Don't forget to edit docstring when functions changed!
+to dev: 
+Don't forget to edit docstring when functions changed!
+Do not import in module level.
 '''
 
 
@@ -37,12 +39,14 @@ def init(conn, note=None):
 # TODO: split to module. subcmd or something..
 class data(object):
     ''' Add data to DB (not dataset) '''
+    
     def manga109(self, conn, root, note=None):
         '''
         Add manga109 data into db.
         
         Manga109 consists directory of files.
         root directory must be satisfy following structure.
+        
         root
         ├── images
         │   ├── AisazuNihaIrarenai
@@ -65,7 +69,7 @@ class data(object):
         
         args: 
         conn: connection str. 'id:pw@host:port/dbname' format.
-        root: root directory path string of manga109 data.
+        root: root directory path string of data.
         note: note for running command. If not None, it is logged.
         '''
         from dw.api import make, put
@@ -75,4 +79,41 @@ class data(object):
 
         orm.init(conn)
         put.canonical_forms( make.data(manga109)(root) )
+        log.cli_cmd(conn, note)
+
+    def old_snet(self, conn, root, note=None):
+        '''
+        Add old snet data into db.
+        
+        Old snet data is directory of files.
+        ROOT direcory must satisfy following structure.
+        map.json must be list of [old_name, some_path]
+        
+        root
+        ├── image
+        │   ├── 0.png
+        │   ├── ...
+        │   └── 284.png
+        ├── clean_rbk
+        │   ├── 0.png
+        │   ├── ...
+        │   └── 284.png
+        ├── clean_wk
+        │   ├── 0.png
+        │   ├── ...
+        │   └── 284.png
+        └── map.json
+        
+        args: 
+        conn: connection str. 'id:pw@host:port/dbname' format.
+        root: root directory path string of data.
+        note: note for running command. If not None, it is logged.
+        '''
+        from dw.api import make, put
+        from dw.db import orm
+        from dw.entity.data import old_snet
+        from dw.ui import log
+
+        orm.init(conn)
+        put.canonical_forms( make.data(old_snet)(root) )
         log.cli_cmd(conn, note)
