@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import imagesize
-import funcy as F 
 
 from dw.api import make, put
 from dw.entity.data import szmc_v0
