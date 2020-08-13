@@ -4,12 +4,12 @@ from dw.db import orm
 from dw.db import schema as S
 
 
-def valid_input():
+def valid():
     # Get dset version from arguments?
     # Check duplication of dset version?
     return True
 
-def load_relations():
+def load():
     with orm.session() as sess:
         return [
             x.uuid for x in sess.query(S.data.uuid).filter(
@@ -27,7 +27,7 @@ def select(ids):
     
     return train_ids, dev_ids, test_ids
 
-def canonical_dset(ids_tuple):
+def canonical(ids_tuple):
     train_ids, dev_ids, test_ids = ids_tuple
 
     train = dict(name='m109.train', revision=0, size=len(train_ids))
