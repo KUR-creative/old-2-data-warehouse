@@ -16,7 +16,7 @@ def test_put_data_from_manga109(conn, m109):
     Q.CREATE_TABLES()
     
     cfs = make.data(manga109)(m109)
-    put.canonical_forms(cfs)
+    put.db_rows(cfs)
     
     with orm.session() as sess:
         img_ids = [
@@ -66,11 +66,11 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
     Q.CREATE_TABLES()
     
     # Put m109
-    put.canonical_forms( make.data(manga109)(m109) )
+    put.db_rows( make.data(manga109)(m109) )
     
     # Put additional data to generate dataset
     cfseq = make.data(image_only_relations)()
-    put.canonical_forms(cfseq)
+    put.db_rows(cfseq)
     # Check img-img relations
     with orm.session() as sess:
         img_rels = [(row.aid, row.bid) for row in 
@@ -87,7 +87,7 @@ def test_make_and_save_data_rel_chunk_and_dataset(conn, m109):
         == sorted(img_ids)
 
     # Make and Put dataset
-    put.canonical_forms( make.dataset(tmp_cnet_dset)() )
+    put.db_rows( make.dataset(tmp_cnet_dset)() )
     # Check tables
     with orm.session() as sess:
         assert sess.query(S.named_relations).count() == 3

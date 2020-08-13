@@ -8,7 +8,7 @@ from dw.db import schema as S
 from dw.util import fp
 
 
-def canonical_forms(cfseq):
+def db_rows(cfseq):
     with orm.session() as sess:
         for cf in cfseq:
             if cf == S.COMMIT:

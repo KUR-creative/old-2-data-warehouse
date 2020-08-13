@@ -49,7 +49,7 @@ def test_make_and_save_v0_m101_data(conn, v0_m101):
     num_masks = len(mask_paths)
     assert num_added == 2 * num_masks
     # Add masks to DB # Use annotation table
-    put.canonical_forms( make.data(szmc_v0)(root_dir, False) )
+    put.db_rows( make.data(szmc_v0)(root_dir, False) )
     # Check DB and compare with image, masks from file system
     with orm.session() as sess:
         # check data(type = mask)

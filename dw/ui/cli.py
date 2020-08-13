@@ -89,7 +89,7 @@ class data(object):
         from dw.ui import log
 
         orm.init(conn)
-        put.canonical_forms( make.data(manga109)(root) )
+        put.db_rows( make.data(manga109)(root) )
         
         log.cli_cmd(conn, note)
         return RUN_SUCCESS
@@ -132,7 +132,7 @@ class data(object):
         from dw.ui import log
 
         orm.init(conn)
-        put.canonical_forms( make.data(old_snet)(root) )
+        put.db_rows( make.data(old_snet)(root) )
         
         log.cli_cmd(conn, note)
         return RUN_SUCCESS
@@ -191,7 +191,7 @@ class data(object):
             make.data(szmc_v0.mask_file)(root),
             exist_ok=True) # TODO: exist_ok=False?
         # Put data into DB
-        put.canonical_forms(
+        put.db_rows(
             make.data(szmc_v0)(root, False) )
         
         log.cli_cmd(conn, note)

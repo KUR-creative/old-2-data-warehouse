@@ -49,7 +49,7 @@ def test_make_and_save_old_snet_data(conn, snet):
     num_added = len(img_paths + easy_paths + hard_paths)
     num_masks = len(easy_paths + hard_paths)
     # Add masks to DB # Use annotation table
-    put.canonical_forms( make.data(old_snet)(snet) )
+    put.db_rows( make.data(old_snet)(snet) )
     # Check DB and compare with image, masks from file system
     with orm.session() as sess:
         # check data(type = mask)
