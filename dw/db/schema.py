@@ -111,6 +111,7 @@ class named_relations2data_relation(Base):
         ['data_relation.aid', 'data_relation.bid']))
     
 def named2rel_rowseq(name, revision, aid_bid_pairs):
+    ''' Generate row sequence of namned relations '''
     return (
         named_relations2data_relation(
             name=name, revision=revision, size=len(aid_bid_pairs),
@@ -126,12 +127,7 @@ def identity_named2rel_rowseq(name, revision, ids):
     Identity relation used to express 'just input' dataset
     ex) dataset for cnet. it has only images.
     '''
-    return (
-        named_relations2data_relation(
-            name=name, revision=revision, size=len(ids),
-            inp=id, out=id
-        ) for id in ids
-    )
+    return named2rel_rowseq(name, revision, list(zip(ids,ids)))
 
 class dataset(Base):
     __tablename__ = 'dataset'
