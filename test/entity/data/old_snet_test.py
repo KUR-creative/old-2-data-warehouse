@@ -54,7 +54,17 @@ def test_make_and_save_old_snet_data(conn, snet):
     with orm.session() as sess:
         # check data(type = mask)
         num_data = sess.query(S.data).count()
+                # TODO: add constant table and their relations
+                # TODO: refactor old_snet and szmc_v0
+        num_imgs_in_db = sess.query(S.data).filter(
+            S.data.type == 'image'
+        ).count()
+        num_masks_in_db = sess.query(S.data).filter(
+            S.data.type == 'mask'
+        ).count()
         assert num_added == num_data - prev_num_data
+        assert num_imgs_in_db * 2 == num_masks_in_db
+        
         # check file
         num_files = sess.query(S.file).count()
         assert num_added == num_files - prev_num_files

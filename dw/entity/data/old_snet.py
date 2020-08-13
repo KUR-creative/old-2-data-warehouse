@@ -38,8 +38,11 @@ def canonical(processed):
      img_ids, easy_ids, hard_ids,
      paths, ids) = processed
     return F.concat(
+        # ids first
+        (S.data(uuid=id, type='image') for id in img_ids),
+        (S.data(uuid=id, type='mask') for id in easy_ids),
+        (S.data(uuid=id, type='mask') for id in hard_ids),
         # all
-        (S.data(uuid=id, type='mask') for id in ids),
         [S.COMMIT],
         (S.file(uuid=id, path=path, type=fu.extension(path))
          for id, path in zip(ids, paths)),
