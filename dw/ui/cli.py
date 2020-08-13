@@ -191,8 +191,7 @@ class data(object):
             make.data(szmc_v0.mask_file)(root),
             exist_ok=True) # TODO: exist_ok=False?
         # Put data into DB
-        put.db_rows(
-            make.data(szmc_v0)(root, False) )
+        put.db_rows( make.data(szmc_v0)(root, False) )
         
         log.cli_cmd(conn, note)
         return RUN_SUCCESS
