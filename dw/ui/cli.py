@@ -2,11 +2,11 @@
 CLI interface of data warehouse.
 
 All successful commands are logged in connected DB.
-If you want to know function of a command?
-
-Run command with --help
 
 ----
+If you want to know the functionality of a command?
+Run command with --help
+
 If you want to dump help page to stdout, use linux cmd: column.
 ex) $ python main.py generate easy_only --help | column
 
@@ -14,9 +14,16 @@ ex) $ python main.py generate easy_only --help | column
 to dev: 
 Don't forget to edit docstring when functions changed!
 Do not import in module level.
+
+All commands are just regular python objects.
+You can freely call them programmatically!
 '''
 
+#--------------------------------------------------------------
+# constants. DO NOT CHANGE!
+RUN_SUCCESS = '------ SUCCESS ------ '
 
+#--------------------------------------------------------------
 def init(conn, note=None):
     '''
     Initialize DB. Schema is defined in dw.db.schema
@@ -34,13 +41,16 @@ def init(conn, note=None):
 
     orm.init(conn)
     Q.CREATE_TABLES()
+    
     log.cli_cmd(conn, note)
+    return RUN_SUCCESS
 
 # TODO: split to module. subcmd or something..
 class data(object):
     ''' Add data to DB (not dataset) '''
     
-    def manga109(self, conn, root, note=None):
+    @staticmethod
+    def manga109(conn, root, note=None):
         '''
         Add manga109 data into db.
         
@@ -80,10 +90,12 @@ class data(object):
 
         orm.init(conn)
         put.canonical_forms( make.data(manga109)(root) )
+        
         log.cli_cmd(conn, note)
-        return '------ Success ------ '
+        return RUN_SUCCESS
 
-    def old_snet(self, conn, root, note=None):
+    @staticmethod
+    def old_snet(conn, root, note=None):
         '''
         Add old snet data into db.
         
@@ -121,10 +133,12 @@ class data(object):
 
         orm.init(conn)
         put.canonical_forms( make.data(old_snet)(root) )
+        
         log.cli_cmd(conn, note)
-        return '------ Success ------ '
+        return RUN_SUCCESS
 
-    def szmc_v0(self, conn, root, note=None):
+    @staticmethod
+    def szmc_v0(conn, root, note=None):
         '''
         Add szmc_v0 data into db.
         
@@ -181,4 +195,4 @@ class data(object):
             make.data(szmc_v0)(root, False) )
         
         log.cli_cmd(conn, note)
-        return '------ Success ------ '
+        return RUN_SUCCESS
