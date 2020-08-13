@@ -1,3 +1,10 @@
+from dw.ui import cli
+import fire
+
+if __name__ == '__main__':
+    fire.Fire(cli)
+    
+'''
 from dw.db import schema as S
 from dw.util import fp
 
@@ -16,7 +23,6 @@ pprint(vars())
 S.generate_names_file()
 #pprint(S.asdf)
 #pprint(S.names)
-'''
 import os
 conn = os.environ['conn']
 m109 = os.environ['m109']

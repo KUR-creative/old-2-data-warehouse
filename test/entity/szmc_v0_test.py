@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import imagesize
-import funcy as F 
 
 from dw.api import make, put
 from dw.entity.data import szmc_v0
@@ -48,13 +47,23 @@ def test_make_and_save_v0_m101_data(conn, v0_m101):
         prev_num_rels = sess.query(S.data_relation).count()
     num_added = len(org_paths + mask_paths)
     num_masks = len(mask_paths)
+    assert num_added == 2 * num_masks
     # Add masks to DB # Use annotation table
     put.canonical_forms( make.data(szmc_v0)(root_dir, False) )
     # Check DB and compare with image, masks from file system
     with orm.session() as sess:
         # check data(type = mask)
         num_data = sess.query(S.data).count()
+        num_imgs_in_db = sess.query(S.data).filter(
+            S.data.type == 'image'
+        ).count()
+        num_masks_in_db = sess.query(S.data).filter(
+            S.data.type == 'mask'
+        ).count()
         assert num_added == num_data - prev_num_data
+                # TODO: add constant table and their relations
+        assert num_imgs_in_db == num_masks_in_db
+        assert num_added == num_imgs_in_db + num_masks_in_db
         # check file
         num_files = sess.query(S.file).count()
         assert num_added == num_files - prev_num_files

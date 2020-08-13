@@ -26,9 +26,9 @@ def valid(root_dir, add_images: bool): # = True
 # root -> [load] -> [process] -> [canonical]
 # -> canonical form of data
 def load(root_dir, add_images: bool): # = True
-    '''
-    add_images means: add generated images in 'images' folder
-    '''
+    ''' add_images:
+    if True, then add generated images in 'images' folder.
+    if False, skip adding images in 'images' folder '''
     org_dir = 'prev_images'
     org_paths = fu.children(Path(root_dir, org_dir))
     mask1bit_paths = fp.go(
@@ -53,9 +53,11 @@ def canonical(processed) -> Optional[List[S.Base]]:
      img_ids, mask_ids,
      paths, ids) = processed
     return F.concat(
-        # all
-        (S.data(uuid=id, type='mask') for id in ids),
+        # ids first
+        (S.data(uuid=id, type='image') for id in img_ids),
+        (S.data(uuid=id, type='mask') for id in mask_ids),
         [S.COMMIT],
+        # all
         (S.file(uuid=id, path=path, type=fu.extension(path))
          for id, path in zip(ids, paths)),
         (S.source(uuid=id, name='szmc_v0') for id in ids),

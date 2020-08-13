@@ -4,11 +4,12 @@ with put.canonical_forms(..), we can use DB declaratively.
 '''
 from uuid import uuid4
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy.schema import ForeignKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects import postgresql as pg
+from sqlalchemy.sql import func
 
 
 #---------------------------------------------------------------
@@ -26,6 +27,15 @@ class ReprHelper:
 Base = declarative_base(cls=ReprHelper)
 
 #===============================================================
+class executed_command(Base):
+    __tablename__ = 'executed_command'
+    command = Column(String, nullable=False, primary_key=True)
+    timestamp = Column(DateTime, server_default=func.now(),
+                       primary_key=True)
+    git_hash = Column(String, nullable=False)
+    note = Column(String)
+    
+#---------------------------------------------------------------
 # Canonical Form for DB
 
 COMMIT = 'COMMIT' # canonical form for session.commit(), const.
