@@ -38,7 +38,6 @@ def write(file_type, path, value, exist_ok=False):
     
 @write.register
 def _(type: fp.equal(FileType.npimg), path, mask, exist_ok): # type: ignore
-    #print(':',type(mask), 'l', len(mask))
     cv2.imwrite(path, mask, [cv2.IMWRITE_PNG_BILEVEL, 1])
 
 @write.register # type: ignore

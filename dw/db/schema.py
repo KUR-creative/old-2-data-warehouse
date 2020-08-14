@@ -87,8 +87,8 @@ def identity_data_rel_rowseq(ids, type):
     Identity relation used to express 'just input' dataset
     ex) dataset for cnet. it has only images.
     '''
-    return (
-        data_relation(aid=id, bid=id, type=type) for id in ids)
+    return (data_relation(aid=id, bid=id, type=type)
+            for id in ids)
 
 class named_relations2data_relation(Base):
     __tablename__ = 'named_relations2data_relation'

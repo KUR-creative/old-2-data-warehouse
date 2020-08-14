@@ -23,9 +23,12 @@ def valid(dset_dic, out_path):
     return True
 
 def load(dset_dic, out_path):
+    # load dset using dic, and load img/mask paths
+    # it can be varied by type of relation(or bid type)
     return dset_dic, out_path
 
 def generate(loaded):
+    # generate tfrecord exampleseq.
     return loaded
 
 def canonical(generated):
@@ -35,4 +38,5 @@ def canonical(generated):
                    type=FT.tfrecord.value,
                    path=str(out_path))
     ], [
+        # metadata | train | dev | test
     ]

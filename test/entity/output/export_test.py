@@ -61,11 +61,11 @@ def test_export_tmp_snet_dset(
     test_fmt = '{test_revision}_{test_size}'
     fmt = f'{train_fmt}.{dev_fmt}.{test_fmt}'
     path = tmp_path / ('snet.' + fmt.format_map(exported))
-    
     assert path.exists()
     # Exported tfrecord has same number of images, masks in DB
     # Metadata also same
     # images, masks actually saved - assert same from db
 
     
-#Test cnet export
+#Test cnet export (img - img relation)
+# tfrecord need to be dset agnostic!
