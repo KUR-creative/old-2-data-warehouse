@@ -1,7 +1,11 @@
 from enum import Enum, auto
 from typing import NamedTuple
 
+import cv2
+from multimethod import overload
 from parse import parse
+
+from dw.util import fp
 
 #---------------------------------------------------------------
 # Common types
@@ -25,6 +29,21 @@ class _AutoName(Enum):
 class FileType(_AutoName):
     npimg = auto()
     folder = auto()
+    
+@overload
+def write(file_type, path, value, exist_ok=False):
+    ''' write value to path by kind '''
+    assert False, 'Use registered file type. See dw.const.types'
+    
+@write.register
+def _(type: fp.equal(FileType.npimg), path, mask, exist_ok=False):
+    #print(':',type(mask), 'l', len(mask))
+    cv2.imwrite(path, mask, [cv2.IMWRITE_PNG_BILEVEL, 1])
+
+@write.register
+def _(type: fp.equal(FileType.folder), path, _, exist_ok=False):
+    path.mkdir(exist_ok=exist_ok)
+
 '''
 class DataType(_AutoName):
     image = auto()
