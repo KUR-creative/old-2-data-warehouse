@@ -1,63 +1,38 @@
-from dw.ui import cli
+'''
 import fire
+
+from dw.ui import cli
+
 
 if __name__ == '__main__':
     fire.Fire(cli)
-    
 '''
-from dw.db import schema as S
-from dw.util import fp
+from dw.ui import cli
 
-from pprint import pprint
-#print(N)
-#pprint(fp.pub_attr_names(N))
-for attr in fp.pub_attrs(S):
-    if hasattr(attr, '__tablename__'):
-        print(attr.__name__)
+from dw.util.test_utils import env_val
 
-        
-print("g:", globals(), 'l', locals(), 'v', vars())
-#pprint(locals())
-pprint(vars())
 
-S.generate_names_file()
-#pprint(S.asdf)
-#pprint(S.names)
-import os
-conn = os.environ['conn']
-m109 = os.environ['m109']
-orm.init(T.connection(conn))
+conn = snet = v0_m101 = v0_school = None
+conn = env_val(conn=conn)
+snet = env_val(snet=snet)
+v0_m101 = env_val(v0_m101=v0_m101)
+v0_school = env_val(v0_school=v0_school)
+
+from dw.db import orm, query as Q
+orm.init(conn)
 Q.DROP_ALL()
-Q.CREATE_TABLES()
+assert cli.init(conn) == cli.RUN_SUCCESS
+# Add all data
+assert cli.data.old_snet(conn, snet) == cli.RUN_SUCCESS
+assert cli.data.szmc_v0(conn, v0_m101) == cli.RUN_SUCCESS
+assert cli.data.szmc_v0(conn, v0_school) == cli.RUN_SUCCESS
+
+
+from dw.entity.dataset import tmp_snet_dset
 from dw.api import make, put
-from dw.entity.data import manga109
-
-cfs = make.data(manga109)(m109)
-put.data(cfs)
-
-
-with orm.session() as sess:
-    id = uuid4()
-    data = S.data(T.Data(id))
-    datums = [S.data(T.Data()), S.data(T.Data()),
-              S.data(T.Data()), S.data(T.Data())]
-    sess.add_all(datums)
-    sess.add(data)
-    sess.commit()
-    # ForeignKey가 되려면 먼저 commit을 해야하는 거 같음.
-    # 그러니까 data만 특수취급 해야 될 거 같은데? 더 해보고..
-    # data-rel도 문제 생길 수 있겠다.
-    # data -> annotation -> data-relation 이 순서로 해야 됨..
-    # 그러면 cf의 순서가 중요할 수 있겠는데..?
-    sess.add(S.file(uuid=data.uuid, path='ppap/bbab'))
-    sess.add(S.file(uuid=datums[0].uuid, path='ppap/bbab123'))
-    sess.commit()
-    result2 = sess.query(S.file)
-    result = sess.query(S.data) # select는 나중에..?
-from pprint import pprint
-print('===============>')
-pprint(list(result))
-pprint(list(result2))
-    
-Q.DROP_ALL()
-'''
+from dw.util import fp
+size = 30
+rdt = (15, 10, 5) # tRain, Dev, Test
+put.db_rows(make.dataset(tmp_snet_dset)(
+    'all', size, rdt, fp.inplace_shuffled
+))

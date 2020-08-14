@@ -35,6 +35,11 @@ def equal(*xs):
 
 def identity(x): return x
 
+import random
+def inplace_shuffled(li):
+    random.shuffle(li)
+    return li
+
 #--------------------------------------------------------------
 def all_fn(*fs): # name from funcy
     return F.all_fn(*fs)
