@@ -36,3 +36,35 @@ rdt = (15, 10, 5) # tRain, Dev, Test
 put.db_rows(make.dataset(tmp_snet_dset)(
     'all', size, rdt, fp.inplace_shuffled
 ))
+
+size = 20
+rdt = (10, 6, 4) # tRain, Dev, Test
+put.db_rows(make.dataset(tmp_snet_dset)(
+    'all', size, rdt, fp.inplace_shuffled
+))
+
+size = 10
+rdt = (5, 3, 2) # tRain, Dev, Test
+put.db_rows(make.dataset(tmp_snet_dset)(
+    'all', size, rdt, fp.inplace_shuffled
+))
+
+from dw.db import schema as S
+name = 'snet'
+with orm.session() as sess:
+    row = sess.query(S.dataset).filter(
+        S.dataset.train_name == name + '.train',
+        S.dataset.dev_name == name + '.dev',
+        S.dataset.test_name == name + '.test'
+    ).order_by(
+        S.dataset.train_size.desc()
+    ).first()
+    
+    from pprint import pprint
+    pprint( {col: getattr(row, col)
+            for col in row.__table__.columns.keys()} )
+
+    #pprint(ret)
+    #pprint(ret.items())
+    #pprint(dict(ret))
+    #pprint(ret._asdict())

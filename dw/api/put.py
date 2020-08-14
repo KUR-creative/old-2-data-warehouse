@@ -1,10 +1,8 @@
 # mypy: ignore-errors
-import cv2
 
 from dw.const import types
 from dw.db import orm
 from dw.db import schema as S
-from dw.util import fp
 
 
 def db_rows(cfseq):

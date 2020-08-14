@@ -161,9 +161,49 @@ class dataset(Base):
          'named_relations.revision',
          'named_relations.size']))
 
+class exported(Base):
+    __tablename__ = 'exported'
+    
+    train_name = Column(String, primary_key=True)
+    train_revision = Column(Integer, primary_key=True)
+    train_size = Column(Integer, primary_key=True)
+    
+    dev_name = Column(String, primary_key=True)
+    dev_revision = Column(Integer, primary_key=True)
+    dev_size = Column(Integer, primary_key=True)
+    
+    test_name = Column(String, primary_key=True)
+    test_revision = Column(Integer, primary_key=True)
+    test_size = Column(Integer, primary_key=True)
+
+    type = Column(String, nullable=False) # types.FileType
+    path = Column(String, primary_key=True)
+    
+    __table_args__ = (
+    # list<s,s> => FKC(*[[s...], [s...]])
+    ForeignKeyConstraint(
+        *zip(*[ # unzip
+        ('train_name',     'dataset.train_name'),
+        ('train_revision', 'dataset.train_revision'),
+        ('train_size',     'dataset.train_size'),
+         
+        ('dev_name',       'dataset.dev_name'),
+        ('dev_revision',   'dataset.dev_revision'),
+        ('dev_size',       'dataset.dev_size'),
+         
+        ('test_name',      'dataset.test_name'),
+        ('test_revision',  'dataset.test_revision'),
+        ('test_size',      'dataset.test_size')
+        ])),
+    )
 #===============================================================
 class help:
     ''' namespace for helper functions '''
     identity_data_rel_rowseq = identity_data_rel_rowseq
     named2rel_rowseq = named2rel_rowseq
     identity_named2rel_rowseq = identity_named2rel_rowseq
+    
+    @staticmethod
+    def row2dict(row):
+        return {col: getattr(row, col)
+                for col in row.__table__.columns.keys()}

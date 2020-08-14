@@ -29,6 +29,7 @@ class _AutoName(Enum):
 class FileType(_AutoName):
     npimg = auto()
     folder = auto()
+    tfrecord = auto()
     
 @overload
 def write(file_type, path, value, exist_ok=False):
@@ -36,12 +37,12 @@ def write(file_type, path, value, exist_ok=False):
     assert False, 'Use registered file type. See dw.const.types'
     
 @write.register
-def _(type: fp.equal(FileType.npimg), path, mask, exist_ok=False):
+def _(type: fp.equal(FileType.npimg), path, mask, exist_ok): # type: ignore
     #print(':',type(mask), 'l', len(mask))
     cv2.imwrite(path, mask, [cv2.IMWRITE_PNG_BILEVEL, 1])
 
-@write.register
-def _(type: fp.equal(FileType.folder), path, _, exist_ok=False):
+@write.register # type: ignore
+def _(type: fp.equal(FileType.folder), path, _, exist_ok):  # type: ignore
     path.mkdir(exist_ok=exist_ok)
 
 '''
