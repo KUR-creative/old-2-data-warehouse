@@ -57,6 +57,8 @@ class data(object):
         `root` is path of image directory. It must contains 
         images only. If not, it raise assertion error.
         '''
+        put.db_rows(make.data(image_directory)(
+            root, 'clean_fmd_comics'))
         
         
     @staticmethod
