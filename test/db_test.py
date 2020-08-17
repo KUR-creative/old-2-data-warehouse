@@ -46,14 +46,14 @@ def test_image_constraints(conn):
 
     uuid = uuid4()
     with orm.session() as sess:
-        sess.add(S.data(uuid=uuid, type='test'))
+        sess.add(S.data(uuid=uuid, type='test')) # type: ignore
         
     with pytest.raises(sa.exc.IntegrityError):
         with orm.session() as sess:
-            sess.add(S.image(uuid=uuid, x=-1, y=0, w=10, h=20,
+            sess.add(S.image(uuid=uuid, x=-1, y=0, w=10, h=20, # type: ignore
                              full_w=40, full_h=100))
     with pytest.raises(sa.exc.IntegrityError):
         with orm.session() as sess:
-            sess.add(S.image(uuid=uuid, x=0, y=0, w=100, h=20,
+            sess.add(S.image(uuid=uuid, x=0, y=0, w=100, h=20, # type: ignore
                              full_w=40, full_h=100))
     Q.DROP_ALL()

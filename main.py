@@ -7,6 +7,15 @@ from dw.ui import cli
 if __name__ == '__main__':
     fire.Fire(cli)
 '''
+
+
+from dw.api import make
+from dw.entity.data import crop_images
+
+make.data(crop_images)(
+    None, [(5, 7), (11, 5)], 2, 3)
+exit()
+
 from dw.ui import cli
 
 from dw.util.test_utils import env_val

@@ -8,6 +8,7 @@ import funcy as F
 import imagesize
 import numpy as np
 
+
 from dw.const.types import FileType
 from dw.db import schema as S
 from dw.util import file_utils as fu
