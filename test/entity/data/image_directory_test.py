@@ -22,3 +22,13 @@ def test_image_directory(conn, cfc):
     num_files = len(fu.descendants(root))
     with orm.session() as sess:
         num_files == sess.query(S.data).count()
+
+def test_cli(conn, cfc):
+    conn = env_val(conn=conn)
+    root = env_val(cfc=cfc)
+    skipif_none(conn, root)
+    
+    orm.init(conn)
+    Q.DROP_ALL()
+    assert cli.init(conn) == cli.RUN_SUCCESS
+    cli.data.image_directory(conn, root)
