@@ -1,6 +1,7 @@
 from collections import namedtuple
+import funcy as F
 import itertools as I
-
+from uuid import uuid4
 
 from dw.util import fp
 from dw.util.etc_utils import modulo_pad, partition
@@ -34,8 +35,31 @@ def process(loaded):
         [namedtuple('Crop', 'x0 x1 y0 y1')(x0, x1, y0, y1) # type: ignore
          for (x0, x1), (y0, y1) in intervals]
         for intervals in intervals_list]
+    # TODO: change to just x,y
     
     return ids, crops_list
         
 def canonical(processed):
+    img_ids, crops_list = processed
+
+    crop_ids_list = [[uuid4() for _ in crops]
+                     for crops in crops_list]
+    img_crop_rels = fp.lmapcat(
+        lambda iid, cids: zip(F.repeat(iid),cids),
+        img_ids, crop_ids_list)
+        
+    crop_ids = F.lconcat(crop_ids_list)
+    crops = F.lconcat(crops_list)
+    
+    '''
+    from pprint import pprint
+    pprint(img_ids)
+    print('----')
+    pprint(img_crop_rels)
+    '''
+    return F.concat(
+        (S.data(uuid=id, type=data_type) for id in crop_ids),
+        [S.COMMIT],
+        (S.image(uuid=id, x=0,y=0, w=w,h=h, full_w=w,full_h=h)
+         for id, (w, h) in zip(ids, whs)),
     return []

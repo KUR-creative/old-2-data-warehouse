@@ -28,8 +28,29 @@ def test_crops(g):
     whs, w, h = g
     _, crops_list = crop_images.process((None, whs, w, h))
     assert len(whs) == len(crops_list)
-    print(whs, crops_list)
     for (img_w, img_h), crops in zip(whs, crops_list):
         n_w = len(partition(img_w + modulo_pad(img_w, w), w))
         n_h = len(partition(img_h + modulo_pad(img_h, h), h))
         assert len(crops) == n_w * n_h
+
+def test_make_crops(conn, v0_m101):
+    conn, v0_m101 = env_val(conn=conn), env_val(v0_m101=v0_m101)
+    skipif_none(conn, v0_m101)
+
+    orm.init(conn)
+    Q.DROP_ALL()
+    Q.CREATE_TABLES()
+    
+    fseq = make.data(szmc_v0.mask_file)(v0_m101)
+    put.files(fseq, exist_ok=True)
+    put.db_rows( make.data(szmc_v0)(v0_m101, False) )
+
+    with orm.session() as sess:
+        img_ids = [x.uuid for x in
+                   sess.query(S.data.uuid).filter(
+                       S.data.type == 'image').all()] # TODO: remove magic-string
+        whs = [(im.w, im.h) for im in
+               sess.query(S.image.w, S.image.h).all()]
+    w = h = 256
+    put.db_rows( make.data(crop_images)(img_ids, whs, w, h) )
+    assert False

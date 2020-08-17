@@ -9,6 +9,7 @@ def partition(x, size):
     x => [x0, x1), [x1, x2), ... , [xN-1, x),
     all same sized intervals. 
     '''
+    assert x >= size
     assert x % size == 0
     def multipleseq():
         beg = 0
