@@ -20,7 +20,8 @@ def init(conn: Union[Connection, str], echo=True):
         if type(conn) is str:
             conn = types.connection(conn) # type: ignore
         conn_str = 'postgresql://{}:{}@{}:{}/{}'.format(*conn)
-        engine = create_engine(conn_str, echo=echo)
+        #engine = create_engine(conn_str, echo=echo)
+        engine = create_engine(conn_str)
     if _make_sess is None:
         _make_sess = sessionmaker(bind=engine)
 

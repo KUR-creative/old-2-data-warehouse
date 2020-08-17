@@ -50,6 +50,16 @@ class data(object):
     ''' Add data to DB (not dataset) '''
     
     @staticmethod
+    def image_directory(conn, root, note=None):
+        ''' 
+        Add all images of directory into DB.
+        
+        `root` is path of image directory. It must contains 
+        images only. If not, it raise assertion error.
+        '''
+        
+        
+    @staticmethod
     def manga109(conn, root, note=None):
         '''
         Add manga109 data into db.
