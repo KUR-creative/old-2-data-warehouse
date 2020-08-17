@@ -10,6 +10,8 @@ from sqlalchemy.schema import ForeignKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects import postgresql as pg
 from sqlalchemy.sql import func
+#from sqlalchemy import UniqueConstraint
+from sqlalchemy import CheckConstraint
 
 
 #---------------------------------------------------------------
@@ -67,6 +69,23 @@ class annotation(Base):
     group = Column(String) # Same type of anno, but different.
                            # Commonly used for class of data
 
+class image(Base):
+    __tablename__ = 'image'
+    uuid = Column(pg.UUID(as_uuid=True), ForeignKey('data.uuid'),
+                  primary_key=True)
+    x = Column(Integer, CheckConstraint('0 <= x AND x < full_w'),
+               primary_key=True)
+    y = Column(Integer, CheckConstraint('0 <= y AND y < full_h'),
+               primary_key=True)
+    w = Column(Integer, CheckConstraint('0 <= w AND w <= full_w'),
+               primary_key=True)
+    h = Column(Integer, CheckConstraint('0 <= h AND h <= full_h'),
+               primary_key=True)
+    full_w = Column(Integer)
+    full_h = Column(Integer)
+    
+        
+    
 #---------------------------------------------------------------
 class named_relations(Base):
     __tablename__ = 'named_relations'

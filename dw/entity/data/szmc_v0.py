@@ -4,8 +4,9 @@ from typing import List, Optional
 from uuid import uuid4
 
 import cv2
-import numpy as np
 import funcy as F
+import imagesize
+import numpy as np
 
 from dw.const.types import FileType
 from dw.db import schema as S
@@ -43,15 +44,16 @@ def process(loaded):
     img_ids = list(F.repeatedly(uuid4, len(img_paths)))
     mask_ids = list(F.repeatedly(uuid4, len(mask_paths)))
     paths = img_paths + mask_paths
+    whs = [imagesize.get(p) for p in paths]
     ids = img_ids + mask_ids
     return (img_paths, mask_paths,
             img_ids, mask_ids,
-            paths, ids)
+            paths, whs, ids)
 
 def canonical(processed) -> Optional[List[S.Base]]:
     (img_paths, mask_paths,
      img_ids, mask_ids,
-     paths, ids) = processed
+     paths, whs, ids) = processed
     return F.concat(
         # ids first
         (S.data(uuid=id, type='image') for id in img_ids),
@@ -61,6 +63,8 @@ def canonical(processed) -> Optional[List[S.Base]]:
         (S.file(uuid=id, path=path, type=fu.extension(path))
          for id, path in zip(ids, paths)),
         (S.source(uuid=id, name='szmc_v0') for id in ids),
+        (S.image(uuid=id, x=0,y=0, w=w,h=h, full_w=w,full_h=h)
+         for id, (w, h) in zip(ids, whs)),
         # mask
         (S.annotation(uuid=id, type='text.mask', group='all')
          for id in mask_ids),

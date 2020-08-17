@@ -46,7 +46,7 @@ def test_make_and_save_old_snet_data(conn, snet):
         prev_num_data = sess.query(S.data).count()
         prev_num_files = sess.query(S.file).count()
         prev_num_rels = sess.query(S.data_relation).count()
-    num_added = len(img_paths + easy_paths + hard_paths)
+    num_added = len(img_paths + easy_paths + hard_paths) # NOTE: It can be changed when more images added
     num_masks = len(easy_paths + hard_paths)
     # Add masks to DB # Use annotation table
     put.db_rows( make.data(old_snet)(snet) )
@@ -76,5 +76,7 @@ def test_make_and_save_old_snet_data(conn, snet):
         # check data_relation
         num_rels = sess.query(S.data_relation).count()
         assert num_masks == num_rels - prev_num_rels
+
+        assert num_added == sess.query(S.image).count()
 
     Q.DROP_ALL()
