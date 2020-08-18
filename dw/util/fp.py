@@ -45,6 +45,8 @@ from funcy import all_fn # name from funcy
 def every_pred(*ps): # name from clojure
     return F.all_fn(*ps)
 
+def lzip(*seqs):
+    return list(zip(*seqs))
 def unzip(seq):
     return zip(*seq)
 
@@ -120,6 +122,7 @@ from funcy import repeat, repeatedly
 def lrepeatedly(f, n): # infinite list not allowed.
     return list(F.repeatedly(f, n))
 
+from funcy import cat, lcat
 from funcy import concat, lconcat
 
 
