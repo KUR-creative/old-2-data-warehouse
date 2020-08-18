@@ -24,7 +24,6 @@ def load(root_dir):
     
     return (img_paths, easy_paths, hard_paths)
 
-
 def process(loaded):
     (img_paths, easy_paths, hard_paths) = loaded
     img_ids = list(F.repeatedly(uuid4, len(img_paths)))

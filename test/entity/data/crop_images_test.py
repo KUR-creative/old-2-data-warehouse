@@ -61,6 +61,7 @@ def test_make_crops(conn, v0_m101):
                 ).join(S.image).all()]
     ids, types, org_ws, org_hs = fp.unzip(rows)
     
+    # before
     with orm.session() as sess:
         before_n_data = sess.query(S.data).count()
         before_n_imgs = sess.query(S.image).count()
@@ -70,6 +71,7 @@ def test_make_crops(conn, v0_m101):
     put.db_rows( make.data(crop_images)(
         ids, types, org_ws, org_hs, w, h) )
     #----------------------------------------------
+    # after
     with orm.session() as sess:
         after_n_data = sess.query(S.data).count()
         after_n_imgs = sess.query(S.image).count()
