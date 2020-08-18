@@ -188,6 +188,15 @@ def mmethod(dispatcher, result):
         return dispatcher
     return inner
 
+def repeatedly(f, n=None):
+    return F.repeatedly(f, n)
+def lrepeatedly(f, n=None):
+    return list(F.repeatedly(f, n))
+
+def concat(*seqs):
+    return F.concat(*seqs)
+def lconcat(*seqs):
+    return F.lconcat(*seqs)
 #--------------------------------------------------------------
 def is_public_name(name):
     return not name.startswith('__')
