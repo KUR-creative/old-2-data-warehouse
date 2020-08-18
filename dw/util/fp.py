@@ -2,19 +2,13 @@ from collections import namedtuple
 import funcy as F
 import itertools as I
 
+#---------------------------------------------------------------
 tup = lambda f: lambda argtup: f(*argtup)
 go = lambda x,*fs: F.rcompose(*fs)(x)
 pipe = F.rcompose
 
 def inc(x): return x + 1
 def dec(x): return x - 1
-
-def is_empty(coll):
-    return (not coll)
-
-def take(n, seq=None):
-    return F.take(n,seq) if not is_empty(seq) \
-    else lambda xs: F.take(n,xs)
 
 def plus(*xs):
     if not xs:
@@ -33,23 +27,32 @@ def equal(*xs):
                 return False
         return True
 
+#--------------------------------------------------------------
 def identity(x): return x
+
+from funcy import all_fn # name from funcy
+def every_pred(*ps): # name from clojure
+    return F.all_fn(*ps)
+
+#---------------------------------------------------------------
+def is_empty(coll):
+    return (not coll)
+
+def take(n, seq=None):
+    return F.take(n,seq) if not is_empty(seq) \
+    else lambda xs: F.take(n,xs)
 
 import random
 def inplace_shuffled(li):
     random.shuffle(li)
     return li
 
-#--------------------------------------------------------------
-from funcy import all_fn # name from funcy
-def every_pred(*ps): # name from clojure
-    return F.all_fn(*ps)
-
 def lzip(*seqs):
     return list(zip(*seqs))
 def unzip(seq):
     return zip(*seq)
 
+#--------------------------------------------------------------
 # Curried functions
 def map(f,*seq):
     return F.map(f,*seq) if not is_empty(seq) \
@@ -101,13 +104,13 @@ def tmapcat(f,*seq):
     return tuple(F.mapcat(f,*seq)) if not is_empty(seq) \
     else lambda *xs: tuple(F.mapcat(f,*xs))
 
-def walk(f,*seq):
-    return F.walk(f,*seq) if not is_empty(seq) \
-    else lambda *xs: F.walk(f,*xs)
-
 def group_by(f, seq=None):
     return F.group_by(f, seq) if not is_empty(seq)\
     else lambda xs: F.group_by(f, xs)
+
+def walk(f,*seq):
+    return F.walk(f,*seq) if not is_empty(seq) \
+    else lambda *xs: F.walk(f,*xs)
 
 def walk_values(f, coll=None):
     return F.walk_values(f, coll) if not is_empty(coll) \
@@ -117,7 +120,7 @@ def walk_keys(f, coll=None):
     return F.walk_keys(f, coll) if not is_empty(coll) \
     else lambda coll: F.walk_keys(f, coll)
 
-
+#---------------------------------------------------------------
 from funcy import repeat, repeatedly
 def lrepeatedly(f, n): # infinite list not allowed.
     return list(F.repeatedly(f, n))
@@ -126,7 +129,7 @@ from funcy import cat, lcat
 from funcy import concat, lconcat
 from funcy import flatten, lflatten
 
-
+#---------------------------------------------------------------
 def split_with(sep_idxs, li):
     ''' 
     If sep_idxs is empty, then it returns empty generator. 
@@ -152,9 +155,6 @@ def foreach(f,*seq):
     F.lmap(f,*seq)
     return None
 
-def dict2namedtuple(type_name, dic):
-    return namedtuple(type_name, sorted(dic))(**dic)
-
 @F.autocurry
 def cut_with_bound(pred, xs):
     chunk = []
@@ -165,6 +165,10 @@ def cut_with_bound(pred, xs):
             chunk = []
     if chunk: #remaining elements
         yield chunk
+
+#--------------------------------------------------------------
+def dict2namedtuple(type_name, dic):
+    return namedtuple(type_name, sorted(dic))(**dic)
 
 #--------------------------------------------------------------
 def is_public_name(name):
