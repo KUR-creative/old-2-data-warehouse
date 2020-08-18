@@ -4,19 +4,22 @@ def modulo_pad(x, m):
     ''' 2a = x + modulo_pad (mod m), where a < x < 2a '''
     return (m - (x % m)) % m
 
-def partition(x, size):
+def factorseq(y, d):
+    ''' Generate factor sequence: 0, d, 2d, ..., y - d '''
+    assert y % d == 0
+    
+    beg = 0
+    max = y
+    while beg != max:
+        yield beg
+        beg += d
+        
+def partition(y, size):
     ''' 
-    x => [x0, x1), [x1, x2), ... , [xN-1, x),
+    y => [y0, y1), [y1, y2), ... , [yN-1, y),
     all same sized intervals. 
     '''
-    assert x >= size
-    assert x % size == 0
-    def multipleseq():
-        beg = 0
-        max = x + size
-        while beg != max:
-            yield beg
-            beg += size
+    assert y >= size
 
-    parts = list(F.pairwise(multipleseq()))
-    return parts if parts else [(0, x)]
+    parts = list(F.pairwise(factorseq(y + size, size)))
+    return parts if parts else [(0, y)]
