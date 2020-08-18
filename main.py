@@ -1,4 +1,3 @@
-'''
 import fire
 
 from dw.ui import cli
@@ -29,6 +28,8 @@ v0_school = env_val(v0_school=v0_school)
 cfc = env_val(cfc=cfc)
 
 '''
+
+'''
 from dw.db import orm, query as Q
 orm.init(conn)
 Q.DROP_ALL()
@@ -48,9 +49,12 @@ put.db_rows(make.dataset(tmp_snet_dset)(
 ))
 '''
 
+'''
 from dw.db import orm, query as Q
 orm.init(conn)
 Q.DROP_ALL()
 assert cli.init(conn) == cli.RUN_SUCCESS
 cli.data.image_directory(conn, cfc)
 print('finished')
+
+'''

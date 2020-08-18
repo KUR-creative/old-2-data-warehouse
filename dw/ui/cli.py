@@ -50,7 +50,7 @@ class data(object):
     ''' Add data to DB (not dataset) '''
     
     @staticmethod
-    def image_directory(conn, root, note=None):
+    def image_directory(conn, root, source=None, note=None):
         ''' 
         Add all images of directory into DB.
         
@@ -60,12 +60,22 @@ class data(object):
         args: 
         conn: connection str. 'id:pw@host:port/dbname' format.
         root: root directory path string of data.
+        source: image source name, if not specifed, dir name
+                (last part of root path).
         note: note for running command. If not None, it is logged.
         '''
+        from pathlib import Path 
         from dw.api import make, put
+        from dw.db import orm
         from dw.entity.data import image_directory
+        from dw.ui import log
+        
+        orm.init(conn)
         put.db_rows(make.data(image_directory)(
-            root, 'clean_fmd_comics'))
+            root, source if source else Path(root).parts[-1]))
+        
+        log.cli_cmd(conn, note)
+        return RUN_SUCCESS
         
         
     @staticmethod

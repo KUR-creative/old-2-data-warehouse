@@ -19,8 +19,9 @@ def assert_img(path):
 #---------------------------------------------------------------
 # make.data functions
 def valid(root, source):
-    '''[valid] <- data root: is valid?'''
-    return Path(root).is_dir()
+    ''' [valid] <- data root: is valid? '''
+    assert Path(root).is_dir()
+    return True
 
 # root -> [load] -> [process] -> [canonical]
 # -> canonical form of data
