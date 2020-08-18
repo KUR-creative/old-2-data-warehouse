@@ -8,25 +8,28 @@ from dw.db import schema as S
 from dw.entity.data import crop_images, szmc_v0
 from dw.util.etc_utils import modulo_pad, partition
 from dw.util.test_utils import env_val, skipif_none
+from dw.util import fp
 
 @st.composite
 def gen(draw):
     ws = draw(st.lists(
         st.integers(min_value=400, max_value=10000),
-        min_size=1, max_size=2
+        min_size=2, max_size=2
     ))
     hs = draw(st.lists(
         st.integers(min_value=400, max_value=10000),
-        min_size=1, max_size=2
+        min_size=2, max_size=2
     ))
     w = draw(st.integers(min_value=200, max_value=350))
     h = draw(st.integers(min_value=200, max_value=350))
     return list(zip(ws,hs)), w, h
 
 @given(gen())
-def test_crops(g):
+def test_generated_number_of_crops(g):
     whs, w, h = g
-    _, crops_list = crop_images.process((None, whs, w, h))
+    ws, hs = fp.unzip(whs)
+    _, _, _, _,_, crops_list = crop_images.process(
+        (whs, None, ws, hs, w, h))
     assert len(whs) == len(crops_list)
     for (img_w, img_h), crops in zip(whs, crops_list):
         n_w = len(partition(img_w + modulo_pad(img_w, w), w))
@@ -46,11 +49,30 @@ def test_make_crops(conn, v0_m101):
     put.db_rows( make.data(szmc_v0)(v0_m101, False) )
 
     with orm.session() as sess:
-        img_ids = [x.uuid for x in
-                   sess.query(S.data.uuid).filter(
-                       S.data.type == 'image').all()] # TODO: remove magic-string
-        whs = [(im.w, im.h) for im in
-               sess.query(S.image.w, S.image.h).all()]
+        rows = [(row.uuid, row.type, row.w, row.h) for row in
+                sess.query(S.data.uuid, S.data.type,
+                           S.image.w, S.image.h
+                ).join(S.image).all()]
+    ids, types, org_ws, org_hs = fp.unzip(rows)
+    
+    with orm.session() as sess:
+        before_n_data = sess.query(S.data).count()
+        before_n_imgs = sess.query(S.image).count()
+        before_n_rels = sess.query(S.data_relation).count()
+    #----------------------------------------------
     w = h = 256
-    put.db_rows( make.data(crop_images)(img_ids, whs, w, h) )
-    assert False
+    put.db_rows( make.data(crop_images)(
+        ids, types, org_ws, org_hs, w, h) )
+    #----------------------------------------------
+    with orm.session() as sess:
+        after_n_data = sess.query(S.data).count()
+        after_n_imgs = sess.query(S.image).count()
+        after_n_rels = sess.query(S.data_relation).count()
+        assert after_n_data > before_n_data
+        assert after_n_imgs > before_n_imgs
+        assert after_n_rels > before_n_rels
+        assert(after_n_data - before_n_data
+            == after_n_imgs - before_n_imgs
+            == after_n_rels - before_n_rels)
+
+    # look & feel check!
