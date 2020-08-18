@@ -122,7 +122,7 @@ def walk_keys(f, coll=None):
 
 def repeatedly(f, n=None):
     return F.repeatedly(f, n)
-def lrepeatedly(f, n=None):
+def lrepeatedly(f, n): # infinite list not allowed.
     return list(F.repeatedly(f, n))
 
 def concat(*seqs):
