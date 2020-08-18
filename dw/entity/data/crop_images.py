@@ -6,6 +6,14 @@ from dw.util import fp
 from dw.util.etc_utils import modulo_pad, factorseq
 
 
+def crop_xys_list(org_ws, org_hs, crop_w, crop_h):
+    img_wseq = (org_w + modulo_pad(org_w, crop_w) for org_w in org_ws)
+    img_hseq = (org_h + modulo_pad(org_h, crop_h) for org_h in org_hs)
+    xseq = (list(factorseq(img_w, crop_w)) for img_w in img_wseq)
+    yseq = (list(factorseq(img_h, crop_h)) for img_h in img_hseq)
+    xys_list = fp.lmap(fp.pipe(I.product, list), xseq, yseq)
+    return xys_list
+
 #---------------------------------------------------------------
 def valid(ids, types, origin_ws, origin_hs, crop_w, crop_h):
     return True
@@ -20,11 +28,14 @@ def load(ids, types, origin_ws, origin_hs, crop_w, crop_h):
 def process(loaded):
     ids, types, org_ws,org_hs, w,h = loaded
     # Make img_(w,h)s multiply of crop_(w,h)
+    '''
     img_wseq = (org_w + modulo_pad(org_w,w) for org_w in org_ws)
     img_hseq = (org_h + modulo_pad(org_h,h) for org_h in org_hs)
     xs = [list(factorseq(img_w, w)) for img_w in img_wseq]
     ys = [list(factorseq(img_h, h)) for img_h in img_hseq]
     xys_list = fp.lmap(fp.pipe(I.product, list), xs, ys)
+    '''
+    xys_list = crop_xys_list(org_ws, org_hs, w, h)
     org_whs = zip(org_ws, org_hs)
     
     '''
@@ -66,5 +77,4 @@ def canonical(processed):
          for id, (x,y), (fw,fh) in
          zip(crop_ids, crop_xys, full_whs)),
         (S.data_relation(aid=iid, bid=cid, type='image_crop')
-         for iid, cid in zip(img_ids, crop_ids))
-    )
+         for iid, cid in zip(img_ids, crop_ids)))

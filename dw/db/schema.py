@@ -189,7 +189,10 @@ class help:
     
     @staticmethod
     def ntup(row, type_name='_'):
-        ''' Makes eager row. No more laziness! '''
+        ''' 
+        Makes eager row. No more laziness! 
+        Maybe not work with S.table classes though..
+        '''
         dic = row._asdict()
         return namedtuple(type_name, dic)(**dic)
     # py > 3.7, key order preserved.

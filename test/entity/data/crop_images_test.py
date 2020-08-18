@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from hypothesis import given
 from hypothesis import strategies as st
+import imagesize
 
 from dw.api import make, put
 from dw.db import orm
@@ -9,6 +12,9 @@ from dw.entity.data import crop_images, szmc_v0
 from dw.util.etc_utils import modulo_pad, partition
 from dw.util.test_utils import env_val, skipif_none
 from dw.util import fp
+from dw.util import file_utils as fu
+from dw.util.etc_utils import modulo_pad, factorseq
+
 
 @st.composite
 def gen(draw):
@@ -75,4 +81,36 @@ def test_make_crops(conn, v0_m101):
             == after_n_imgs - before_n_imgs
             == after_n_rels - before_n_rels)
 
+    # Check number of added crops
+    root_dir = v0_m101
+    mask_dir = Path(root_dir, 'mask1bit')
+    mask_paths = fu.children(mask_dir)
+    
+    org_ws, org_hs = fp.unzip(
+        imagesize.get(p) for p in mask_paths)
+    xys_list = crop_images.crop_xys_list(org_ws, org_hs, h, w)
+    num_crops = len(fp.lcat(xys_list)) * 2 # img, mask
+    with orm.session() as sess:
+        assert num_crops == after_n_data - before_n_data
+        
     # look & feel check!
+    '''
+    with orm.session() as sess:
+        parents = fp.lmap(
+            S.help.ntup,
+            sess.query(S.file.path, S.image.x, S.image.y)
+            .join(S.data_relation,
+                  S.file.uuid == S.data_relation.aid)
+            .join(S.image,
+                  S.image.uuid == S.data_relation.bid)
+            .order_by(S.file.path, S.image.x, S.image.y))
+    
+    #from pprint import pprint
+    #pprint(parents)
+    import cv2
+    for path, x, y in parents:
+        img = cv2.imread(path)
+        cv2.imshow('parent', img)
+        cv2.imshow('crop', img[y:y+h, x:x+w])
+        cv2.waitKey(0)
+    '''

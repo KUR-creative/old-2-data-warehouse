@@ -124,6 +124,7 @@ def lrepeatedly(f, n): # infinite list not allowed.
 
 from funcy import cat, lcat
 from funcy import concat, lconcat
+from funcy import flatten, lflatten
 
 
 def split_with(sep_idxs, li):
