@@ -3,15 +3,15 @@ table row classes and 'COMMIT' are canonical form for DB
 with put.canonical_forms(..), we can use DB declaratively.
 '''
 from uuid import uuid4
+from collections import namedtuple
 
 from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, CheckConstraint
 from sqlalchemy.schema import ForeignKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects import postgresql as pg
 from sqlalchemy.sql import func
 #from sqlalchemy import UniqueConstraint
-from sqlalchemy import CheckConstraint
 
 
 #---------------------------------------------------------------
@@ -186,3 +186,10 @@ class help:
     identity_data_rel_rowseq = identity_data_rel_rowseq
     named2rel_rowseq = named2rel_rowseq
     identity_named2rel_rowseq = identity_named2rel_rowseq
+    
+    @staticmethod
+    def ntup(row, type_name='_'):
+        ''' Makes eager row. No more laziness! '''
+        dic = row._asdict()
+        return namedtuple(type_name, dic)(**dic)
+    # py > 3.7, key order preserved.
