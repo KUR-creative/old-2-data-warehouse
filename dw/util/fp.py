@@ -120,6 +120,16 @@ def walk_keys(f, coll=None):
     return F.walk_keys(f, coll) if not is_empty(coll) \
     else lambda coll: F.walk_keys(f, coll)
 
+def repeatedly(f, n=None):
+    return F.repeatedly(f, n)
+def lrepeatedly(f, n=None):
+    return list(F.repeatedly(f, n))
+
+def concat(*seqs):
+    return F.concat(*seqs)
+def lconcat(*seqs):
+    return F.lconcat(*seqs)
+
 def split_with(sep_idxs, li):
     ''' 
     If sep_idxs is empty, then it returns empty generator. 
@@ -148,10 +158,6 @@ def foreach(f,*seq):
 def dict2namedtuple(type_name, dic):
     return namedtuple(type_name, sorted(dic))(**dic)
 
-class A():
-    def __init__(self,x): self.x = x
-    def m(self,x): return x
-
 @F.autocurry
 def cut_with_bound(pred, xs):
     chunk = []
@@ -163,40 +169,6 @@ def cut_with_bound(pred, xs):
     if chunk: #remaining elements
         yield chunk
 
-# http://codeblog.dhananjaynene.com/2010/08/clojure-style-multi-methods-in-python/
-def multi(switcher_func):
-    ''' Declares a multi map based method which will switch to the
-    appropriate function based on the results of the switcher func'''
-    def dispatcher(*args, **kwargs):
-        key = switcher_func(*args, **kwargs)
-        func = dispatcher.dispatch_map.get(key) # type: ignore
-        if func :
-            return func(*args,**kwargs)
-        else :
-            raise Exception("No function defined for dispatch key: %s" % str(key))
-    dispatcher.dispatch_map = {} # type: ignore
-    return dispatcher
-
-def mmethod(dispatcher, result):
-    ''' The multi method decorator which allows one method at a time
-    to be added to the broader switch for the given result value'''
-    def inner(wrapped):
-        dispatcher.dispatch_map[result] = wrapped
-        # Change the method name from clashing with the multi and allowing
-        # all multi methods to be written using the same name
-        wrapped.__name__ = "_" + wrapped.__name__ + "_" + str(result)
-        return dispatcher
-    return inner
-
-def repeatedly(f, n=None):
-    return F.repeatedly(f, n)
-def lrepeatedly(f, n=None):
-    return list(F.repeatedly(f, n))
-
-def concat(*seqs):
-    return F.concat(*seqs)
-def lconcat(*seqs):
-    return F.lconcat(*seqs)
 #--------------------------------------------------------------
 def is_public_name(name):
     return not name.startswith('__')
