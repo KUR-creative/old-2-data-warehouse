@@ -41,19 +41,14 @@ def inplace_shuffled(li):
     return li
 
 #--------------------------------------------------------------
-def all_fn(*fs): # name from funcy
-    return F.all_fn(*fs)
+from funcy import all_fn # name from funcy
 def every_pred(*ps): # name from clojure
     return F.all_fn(*ps)
 
 def unzip(seq):
     return zip(*seq)
 
-def concat(*seqs):
-    return F.concat(*seqs)
-def lconcat(*seqs):
-    return F.lconcat(*seqs)
-
+# Curried functions
 def map(f,*seq):
     return F.map(f,*seq) if not is_empty(seq) \
     else lambda *xs: F.map(f,*xs)
@@ -120,15 +115,13 @@ def walk_keys(f, coll=None):
     return F.walk_keys(f, coll) if not is_empty(coll) \
     else lambda coll: F.walk_keys(f, coll)
 
-def repeatedly(f, n=None):
-    return F.repeatedly(f, n)
+
+from funcy import repeat, repeatedly
 def lrepeatedly(f, n): # infinite list not allowed.
     return list(F.repeatedly(f, n))
 
-def concat(*seqs):
-    return F.concat(*seqs)
-def lconcat(*seqs):
-    return F.lconcat(*seqs)
+from funcy import concat, lconcat
+
 
 def split_with(sep_idxs, li):
     ''' 
@@ -188,3 +181,4 @@ def prop(p, obj=None):
       else obj[p] if hasattr(obj,'__getitem__')
       else getattr(obj, p) if obj 
       else lambda o: prop(p,o))
+

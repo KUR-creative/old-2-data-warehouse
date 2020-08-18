@@ -4,7 +4,7 @@
 # export m109
 
 # pip install pyflakes, autoflake
-autoflake --remove-all-unused-imports -r --in-place . 
+autoflake --remove-all-unused-imports -r --in-place --exclude ./dw/util/fp.py . 
 pytest --conn $conn --m109 $m109
 mypy 
 pyflakes .
