@@ -3,13 +3,15 @@ table row classes and 'COMMIT' are canonical form for DB
 with put.canonical_forms(..), we can use DB declaratively.
 '''
 from uuid import uuid4
+from collections import namedtuple
 
 from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, CheckConstraint
 from sqlalchemy.schema import ForeignKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects import postgresql as pg
 from sqlalchemy.sql import func
+#from sqlalchemy import UniqueConstraint
 
 
 #---------------------------------------------------------------
@@ -67,6 +69,23 @@ class annotation(Base):
     group = Column(String) # Same type of anno, but different.
                            # Commonly used for class of data
 
+class image(Base):
+    __tablename__ = 'image'
+    uuid = Column(pg.UUID(as_uuid=True), ForeignKey('data.uuid'),
+                  primary_key=True)
+    x = Column(Integer, CheckConstraint('0 <= x AND x < full_w'),
+               primary_key=True)
+    y = Column(Integer, CheckConstraint('0 <= y AND y < full_h'),
+               primary_key=True)
+    w = Column(Integer, CheckConstraint('0 <= w AND w <= full_w'),
+               primary_key=True)
+    h = Column(Integer, CheckConstraint('0 <= h AND h <= full_h'),
+               primary_key=True)
+    full_w = Column(Integer)
+    full_h = Column(Integer)
+    
+        
+    
 #---------------------------------------------------------------
 class named_relations(Base):
     __tablename__ = 'named_relations'
@@ -167,3 +186,13 @@ class help:
     identity_data_rel_rowseq = identity_data_rel_rowseq
     named2rel_rowseq = named2rel_rowseq
     identity_named2rel_rowseq = identity_named2rel_rowseq
+    
+    @staticmethod
+    def ntup(row, type_name='_'):
+        ''' 
+        Makes eager row. No more laziness! 
+        Maybe not work with S.table classes though..
+        '''
+        dic = row._asdict()
+        return namedtuple(type_name, dic)(**dic)
+    # py > 3.7, key order preserved.

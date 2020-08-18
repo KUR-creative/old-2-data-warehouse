@@ -56,7 +56,14 @@ class data(object):
         
         `root` is path of image directory. It must contains 
         images only. If not, it raise assertion error.
+        
+        args: 
+        conn: connection str. 'id:pw@host:port/dbname' format.
+        root: root directory path string of data.
+        note: note for running command. If not None, it is logged.
         '''
+        from dw.api import make, put
+        from dw.entity.data import image_directory
         put.db_rows(make.data(image_directory)(
             root, 'clean_fmd_comics'))
         

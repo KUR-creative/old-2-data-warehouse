@@ -4,6 +4,7 @@ from uuid import uuid4
 import cv2
 import numpy as np 
 import funcy as F
+import imagesize
 
 from dw.const.types import FileType
 from dw.db import schema as S
@@ -20,23 +21,28 @@ def load(root_dir):
     img_to = fu.replace1('image')
     easy_paths = [img_to('easy', p) for p in img_paths]
     hard_paths = [img_to('hard', p) for p in img_paths]
-    return img_paths, easy_paths, hard_paths
+    
+    return (img_paths, easy_paths, hard_paths)
+
 
 def process(loaded):
-    img_paths, easy_paths, hard_paths = loaded
+    (img_paths, easy_paths, hard_paths) = loaded
     img_ids = list(F.repeatedly(uuid4, len(img_paths)))
     easy_ids = list(F.repeatedly(uuid4, len(easy_paths)))
     hard_ids = list(F.repeatedly(uuid4, len(hard_paths)))
+    
     paths = img_paths + easy_paths + hard_paths
+    whs = [imagesize.get(p) for p in paths]
     ids = img_ids + easy_ids + hard_ids
+    
     return (img_paths, easy_paths, hard_paths,
             img_ids, easy_ids, hard_ids,
-            paths, ids)
+            paths, whs, ids)
 
 def canonical(processed):
     (img_paths, easy_paths, hard_paths,
      img_ids, easy_ids, hard_ids,
-     paths, ids) = processed
+     paths, whs, ids) = processed
     return F.concat(
         # ids first
         (S.data(uuid=id, type='image') for id in img_ids),
@@ -47,6 +53,8 @@ def canonical(processed):
         (S.file(uuid=id, path=path, type=fu.extension(path))
          for id, path in zip(ids, paths)),
         (S.source(uuid=id, name='old_snet') for id in ids),
+        (S.image(uuid=id, x=0,y=0, w=w,h=h, full_w=w,full_h=h)
+         for id, (w, h) in zip(ids, whs)),
         # mask
         (S.annotation(uuid=id, type='text.mask', group='easy')
          for id in easy_ids),
