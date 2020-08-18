@@ -7,6 +7,7 @@ def pytest_addoption(parser):
     parser.addoption("--v0_m101", action="store", default=None)
     parser.addoption("--v0_school", action="store", default=None)
     parser.addoption("--cfc", action="store", default=None)
+    parser.addoption("--test_cfc", action="store", default=None)
 
 @pytest.fixture(scope="module")
 def conn(request): return request.config.getoption("--conn")
@@ -25,3 +26,7 @@ def v0_school(request):
 def cfc(request):
     ''' clean fmd comics '''
     return request.config.getoption("--cfc")
+@pytest.fixture(scope="module")
+def test_cfc(request):
+    ''' clean fmd comics for test'''
+    return request.config.getoption("--test_cfc")

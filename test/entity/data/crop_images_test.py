@@ -13,7 +13,7 @@ from dw.util.etc_utils import modulo_pad, partition
 from dw.util.test_utils import env_val, skipif_none
 from dw.util import fp
 from dw.util import file_utils as fu
-from dw.util.etc_utils import modulo_pad, factorseq
+from dw.util.etc_utils import modulo_pad
 
 
 @st.composite
